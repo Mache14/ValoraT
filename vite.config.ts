@@ -8,4 +8,8 @@ export default defineConfig({
     react(),
     tailwindcss(),
   ],
+  server: {
+    open: true,   // abre el navegador automáticamente al arrancar
+    host: true,   // permite abrir la app también desde el móvil en la misma red WiFi
+  },
 })

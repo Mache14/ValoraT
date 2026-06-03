@@ -1,11 +1,23 @@
-import { useState } from 'react'
+import { useState, type ComponentType } from 'react'
 import {
   Activity, ArrowLeft, MoveUp, Dumbbell, ShieldCheck, BrainCircuit,
-  Timer, Zap, Ruler, HeartPulse, Footprints, ListChecks,
+  Timer, Zap, Ruler, HeartPulse, Footprints, ListChecks, Play,
   Target as TargetIcon, type LucideIcon,
 } from 'lucide-react'
 import { Sparkline, type SparklineStatus } from '../../components/ui/Sparkline'
 import { useTestsCatalogo } from '../../hooks/useTestsCatalogo'
+import { TrailMakingTest } from '../tests/tmt/TrailMakingTest'
+import { PvtBTest } from '../tests/pvt/PvtBTest'
+
+/**
+ * Registro de tests con pantalla funcional.
+ * Cada testId se mapea a su componente (que recibe `onBack`).
+ * Al añadir un test nuevo, basta con registrar aquí su componente.
+ */
+const TEST_COMPONENTS: Record<string, ComponentType<{ onBack: () => void }>> = {
+  tmt: TrailMakingTest,
+  pvt: PvtBTest,
+}
 
 /**
  * EvaluacionesView — pantalla de Evaluaciones.
@@ -31,6 +43,7 @@ interface TestDetail {
   trend: number[]
   status: SparklineStatus
   icon: LucideIcon
+  testId?: string // si está presente y registrado, la tarjeta abre el test
 }
 
 const evalsData: EvalDomain[] = [
@@ -50,12 +63,12 @@ const testsDetailData: Record<string, TestDetail[]> = {
     { title: '30 seg Arm Curl', desc: 'Mide la fuerza del tren superior mediante flexiones de codo con peso ligero, imitando tareas como llevar la compra.', trend: [50, 52, 55, 60, 62], status: 'up', icon: Dumbbell },
   ],
   equilibrio: [
-    { title: 'Equilibrio Unipodal (Ojos Abiertos)', desc: 'Control postural básico. Medimos cuánto tiempo puedes mantener la postura sobre una pierna sin apoyo.', trend: [55, 50, 48, 42, 38], status: 'down', icon: Footprints },
-    { title: 'Equilibrio Unipodal (Ojos Cerrados)', desc: 'Prueba avanzada de propiocepción. Al anular la vista, dependes totalmente de tu sistema vestibular y motor.', trend: [40, 35, 30, 25, 20], status: 'down', icon: ShieldCheck },
+    { title: 'Equilibrio Unipodal (Ojos Abiertos)', desc: 'Control postural básico. Medimos cuánto tiempo puedes mantener la postura sobre una pierna sin apoyo.', trend: [55, 50, 48, 42, 38], status: 'down', icon: Footprints, testId: 'single-leg-open' },
+    { title: 'Equilibrio Unipodal (Ojos Cerrados)', desc: 'Prueba avanzada de propiocepción. Al anular la vista, dependes totalmente de tu sistema vestibular y motor.', trend: [40, 35, 30, 25, 20], status: 'down', icon: ShieldCheck, testId: 'single-leg-closed' },
   ],
   cognicion: [
-    { title: 'Trail Making Test', desc: 'Evalúa la función cognitiva, la atención visual sostenida y la capacidad de cambio de tarea rápida.', trend: [70, 65, 60, 50, 25], status: 'down', icon: BrainCircuit },
-    { title: 'PVT-B', desc: 'Brief Psychomotor Task. Mide tu tiempo de reacción y estado de alerta para prevenir accidentes diarios.', trend: [80, 75, 60, 40, 25], status: 'down', icon: TargetIcon },
+    { title: 'Trail Making Test', desc: 'Evalúa la función cognitiva, la atención visual sostenida y la capacidad de cambio de tarea rápida.', trend: [70, 65, 60, 50, 25], status: 'down', icon: BrainCircuit, testId: 'tmt' },
+    { title: 'PVT-B', desc: 'Brief Psychomotor Task. Mide tu tiempo de reacción y estado de alerta para prevenir accidentes diarios.', trend: [80, 75, 60, 40, 25], status: 'down', icon: TargetIcon, testId: 'pvt' },
   ],
   coordinacion: [
     { title: 'Time Up and Go (TUG)', desc: 'Prueba de agilidad y equilibrio dinámico. Mide el tiempo en levantarse, caminar 3 metros y volver a sentarse.', trend: [75, 70, 65, 62, 60], status: 'down', icon: Timer },
@@ -84,6 +97,7 @@ type SortMode = 'default' | 'mejor' | 'peor'
 export function EvaluacionesView() {
   const [sortMode, setSortMode] = useState<SortMode>('default')
   const [selectedEval, setSelectedEval] = useState<EvalDomain | null>(null)
+  const [activeTestId, setActiveTestId] = useState<string | null>(null)
   const { tests } = useTestsCatalogo() // conexión real con la base de datos
 
   const sortedEvals = [...evalsData].sort((a, b) => {
@@ -93,6 +107,12 @@ export function EvaluacionesView() {
     if (!a.alert && b.alert) return 1
     return a.score - b.score
   })
+
+  // ── Test activo (takeover a pantalla completa) ──
+  if (activeTestId && TEST_COMPONENTS[activeTestId]) {
+    const TestComponent = TEST_COMPONENTS[activeTestId]
+    return <TestComponent onBack={() => setActiveTestId(null)} />
+  }
 
   // ── Vista de detalle de un dominio ──
   if (selectedEval) {
@@ -117,10 +137,13 @@ export function EvaluacionesView() {
         <div className="space-y-4 px-1">
           {testsDetailData[selectedEval.id]?.map((test, idx) => {
             const IconComponent = test.icon
+            const isPlayable = !!(test.testId && TEST_COMPONENTS[test.testId])
             return (
               <div
                 key={idx}
-                className="bg-white rounded-3xl p-5 shadow-sm border border-slate-100 flex gap-4 relative overflow-hidden"
+                className={`bg-white rounded-3xl p-5 shadow-sm border flex gap-4 relative overflow-hidden transition-all ${
+                  isPlayable ? 'border-slate-100 hover:border-indigo-200 hover:shadow-md' : 'border-slate-100'
+                }`}
               >
                 <div className="flex-1 flex flex-col justify-between">
                   <div>
@@ -130,6 +153,14 @@ export function EvaluacionesView() {
                     <p className="text-xs text-slate-500 font-medium leading-relaxed">{test.desc}</p>
                   </div>
                   <Sparkline data={test.trend} status={test.status} />
+                  {isPlayable && (
+                    <button
+                      onClick={() => setActiveTestId(test.testId!)}
+                      className="mt-3 self-start bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-bold uppercase tracking-wider py-2 px-4 rounded-xl flex items-center gap-1.5 shadow-sm shadow-indigo-200 transition-colors active:translate-y-px"
+                    >
+                      <Play size={14} /> Realizar test
+                    </button>
+                  )}
                 </div>
                 <div className="w-20 sm:w-24 flex-shrink-0 flex items-center justify-center border-l border-slate-50 pl-4">
                   <div
