@@ -60,10 +60,10 @@ export function getPercentiles(modality: Modality, sex: Sex, age: number): Perce
   return cell[sex]
 }
 
-/** Clasifica un tiempo final respecto a los percentiles. */
+/** Clasifica un tiempo final respecto a los percentiles (con emoji por categoría). */
 export function classify(time: number, p: Percentiles): string {
-  if (time >= p.p75) return 'Rendimiento Excelente (> P75)'
-  if (time >= p.p50) return 'Por encima de la media (> P50)'
-  if (time >= p.p25) return 'Rendimiento Normal (> P25)'
-  return 'Bajo lo normal (< P25)'
+  if (time >= p.p75) return '🟢 Rendimiento Excelente (> P75)'
+  if (time >= p.p50) return '🔵 Por encima de la media (> P50)'
+  if (time >= p.p25) return '🟠 Rendimiento Normal (> P25)'
+  return '🔴 Bajo lo normal (< P25)'
 }

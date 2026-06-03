@@ -1,6 +1,7 @@
 import { useState, useRef, useEffect, useCallback } from 'react'
-import { ArrowLeft, Play, Zap, Trash2, CheckCircle2, AlertTriangle, Brain } from 'lucide-react'
+import { ArrowLeft, Play, Zap, Trash2, CheckCircle2, AlertTriangle, Brain, X, Smartphone, Timer, MousePointerClick } from 'lucide-react'
 import { useWebAudio } from '../../../hooks/useWebAudio'
+import { ConfirmDialog } from '../../../components/ui/ConfirmDialog'
 
 /**
  * PvtBTest — Brief Psychomotor Vigilance Task (Basner & Dinges, 2011).
@@ -51,6 +52,7 @@ export function PvtBTest({ onBack }: PvtBTestProps) {
   const [visualMs, setVisualMs] = useState<number | null>(null) // ms mostrados durante el estímulo
   const [feedback, setFeedback] = useState<Feedback>(null)
   const [results, setResults] = useState<ReturnType<typeof computeResults> | null>(null)
+  const [showAbandon, setShowAbandon] = useState(false)
 
   // Refs para el motor de cronometría (leídos en callbacks asíncronos)
   const testActiveRef = useRef(false)
@@ -239,26 +241,60 @@ export function PvtBTest({ onBack }: PvtBTestProps) {
             <p className="text-blue-100 text-sm leading-relaxed">Test objetivo de vigilancia psicomotora. Pulsa lo más rápido posible cuando aparezca el contador.</p>
           </div>
 
+          {/* Cómo funciona (instrucciones visuales paso a paso) */}
+          <div className="bg-white rounded-3xl p-5 shadow-sm border border-slate-100">
+            <h3 className="text-xs font-bold text-slate-500 uppercase mb-3">Cómo funciona</h3>
+            <div className="grid grid-cols-3 gap-3">
+              {[
+                { Icon: Smartphone, n: '1', title: 'Prepárate', desc: 'Sujeta el móvil con ambas manos y mira la pantalla.', tone: 'bg-slate-900 text-slate-200' },
+                { Icon: Timer, n: '2', title: 'Estímulo', desc: 'Aparecerá un contador rojo de milisegundos.', tone: 'bg-rose-500 text-white' },
+                { Icon: MousePointerClick, n: '3', title: 'Reacciona', desc: 'Toca la pantalla lo más rápido que puedas.', tone: 'bg-emerald-500 text-white' },
+              ].map((s) => (
+                <div key={s.n} className="flex flex-col items-center text-center">
+                  <div className={`w-14 h-14 rounded-2xl flex items-center justify-center mb-2 shadow-sm ${s.tone}`}>
+                    <s.Icon size={26} />
+                  </div>
+                  <span className="text-[11px] font-bold text-slate-700">{s.n}. {s.title}</span>
+                  <p className="text-[10px] text-slate-400 leading-tight mt-0.5">{s.desc}</p>
+                </div>
+              ))}
+            </div>
+          </div>
+
           {/* Configuración */}
           <div className="bg-white rounded-3xl p-5 shadow-sm border border-slate-100 space-y-4">
             <div>
-              <label className="block text-xs font-bold text-slate-500 uppercase mb-2">Duración de la prueba</label>
-              <div className="grid grid-cols-3 gap-2">
-                {[{ v: 30, l: '30 s' }, { v: 60, l: '1 min' }, { v: 180, l: '3 min' }].map((o) => (
-                  <button key={o.v} onClick={() => setDuration(o.v)}
-                    className={`py-2.5 rounded-xl border-2 font-bold text-sm transition-colors ${duration === o.v ? 'border-indigo-500 bg-indigo-50 text-indigo-700' : 'border-slate-200 text-slate-500'}`}>
-                    {o.l}
-                  </button>
-                ))}
+              <label className="block text-xs font-bold text-slate-500 uppercase mb-2">Tipo de prueba</label>
+              <div className="grid grid-cols-2 gap-3">
+                <button onClick={() => setDuration(30)}
+                  className={`py-3 rounded-xl border-2 font-bold text-sm flex flex-col items-center gap-1 transition-colors ${duration === 30 ? 'border-indigo-500 bg-indigo-50 text-indigo-700' : 'border-slate-200 text-slate-500'}`}>
+                  <span className="bg-slate-200 text-slate-600 text-[9px] px-2 py-0.5 rounded-full font-bold uppercase">Práctica</span>
+                  30 segundos
+                </button>
+                <button onClick={() => setDuration(180)}
+                  className={`py-3 rounded-xl border-2 font-bold text-sm flex flex-col items-center gap-1 transition-colors ${duration === 180 ? 'border-emerald-500 bg-emerald-50 text-emerald-700' : 'border-slate-200 text-slate-500'}`}>
+                  <span className="bg-emerald-100 text-emerald-700 text-[9px] px-2 py-0.5 rounded-full font-bold uppercase">Evaluación Real</span>
+                  3 minutos
+                </button>
               </div>
-              <p className="text-[10px] text-slate-400 mt-1.5">El estándar clínico PVT-B es de 3 minutos; las versiones cortas sirven de demostración.</p>
+              <p className="text-[10px] text-slate-400 mt-2 px-1">
+                La prueba de práctica de 30 segundos te permite familiarizarte con el funcionamiento del test.
+                La evaluación real de 3 minutos es la que genera datos clínicamente válidos.
+              </p>
             </div>
-            <div className="flex items-center justify-between bg-slate-50 rounded-xl p-3 border border-slate-100">
-              <span className="text-sm text-slate-600 font-medium">Respuesta háptica (vibración)</span>
-              <button onClick={() => setVibration((v) => !v)}
-                className={`w-11 h-6 rounded-full transition-colors relative ${vibration ? 'bg-indigo-500' : 'bg-slate-300'}`}>
-                <span className={`absolute top-0.5 w-5 h-5 bg-white rounded-full shadow transition-all ${vibration ? 'left-[22px]' : 'left-0.5'}`} />
-              </button>
+            <div>
+              <div className="flex items-center justify-between bg-slate-50 rounded-xl p-3 border border-slate-100">
+                <span className="text-sm text-slate-600 font-medium">Respuesta háptica (vibración)</span>
+                <button onClick={() => setVibration((v) => !v)}
+                  className={`w-11 h-6 rounded-full transition-colors relative ${vibration ? 'bg-indigo-500' : 'bg-slate-300'}`}>
+                  <span className={`absolute top-0.5 w-5 h-5 bg-white rounded-full shadow transition-all ${vibration ? 'left-[22px]' : 'left-0.5'}`} />
+                </button>
+              </div>
+              <p className="text-[10px] text-slate-400 mt-1.5 px-1">
+                La respuesta háptica hace que el móvil <strong>vibre</strong> al registrar cada pulsación,
+                dándote feedback táctil inmediato. Actívala si quieres sentir la confirmación en la mano,
+                o desactívala si la vibración te distrae durante la prueba.
+              </p>
             </div>
             <button onClick={initTest}
               className="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-3.5 rounded-xl shadow-lg shadow-indigo-200 transition-colors flex items-center justify-center gap-2">
@@ -269,7 +305,7 @@ export function PvtBTest({ onBack }: PvtBTestProps) {
           {/* Línea base */}
           <div className="bg-white rounded-3xl p-4 shadow-sm border border-slate-100">
             <div className="flex items-center justify-between">
-              <span className="text-xs font-bold text-slate-500 uppercase">Línea base ({duration === 180 ? '3 min' : duration === 60 ? '1 min' : '30 s'})</span>
+              <span className="text-xs font-bold text-slate-500 uppercase">Línea base ({duration === 180 ? '3 min' : '30 s'})</span>
               <span className={`text-xs font-bold ${baselineCount >= 3 ? 'text-emerald-600' : 'text-amber-600'}`}>{baselineCount}/3 sesiones</span>
             </div>
             <p className="text-[11px] text-slate-400 mt-1">
@@ -350,7 +386,18 @@ export function PvtBTest({ onBack }: PvtBTestProps) {
             )}
           </div>
 
-          <button onClick={abortTest} className="mt-4 text-rose-500 text-sm font-semibold self-center">Abortar prueba</button>
+          <button onClick={() => setShowAbandon(true)}
+            className="mt-4 self-center flex items-center gap-1.5 text-rose-500 hover:text-rose-600 text-sm font-bold bg-rose-50 border border-rose-100 px-4 py-2 rounded-xl transition-colors">
+            <X size={16} /> Abandonar prueba
+          </button>
+
+          <ConfirmDialog
+            open={showAbandon}
+            title="Abandonar prueba"
+            message="¿Seguro que quieres abandonar? Se perderá el progreso y no se guardará ningún resultado."
+            onConfirm={() => { setShowAbandon(false); abortTest() }}
+            onCancel={() => setShowAbandon(false)}
+          />
         </div>
       )}
 

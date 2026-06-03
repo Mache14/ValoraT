@@ -1,7 +1,10 @@
 import { useState, useRef, useEffect, useCallback } from 'react'
-import { ArrowLeft, Play, Eye, EyeOff } from 'lucide-react'
+import { ArrowLeft, Play, Eye, EyeOff, X } from 'lucide-react'
 import { HistoryLineChart } from '../../../components/ui/HistoryLineChart'
+import { ConfirmDialog } from '../../../components/ui/ConfirmDialog'
 import { getPercentiles, classify, type Modality, type Sex, type Percentiles } from './upstNorms'
+
+type SupportFoot = 'Derecho' | 'Izquierdo'
 
 /**
  * SingleLegTestBase — lógica compartida del Unipodal Stance Test.
@@ -18,7 +21,7 @@ interface Props {
 }
 
 type Screen = 'form' | 'instructions' | 'run' | 'results'
-interface HistPoint { label: string; score: number }
+interface HistPoint { label: string; score: number; foot?: SupportFoot; sex?: Sex; age?: number }
 
 export function SingleLegTestBase({ modality, onBack }: Props) {
   const isClosed = modality === 'Ojos Cerrados'
@@ -26,8 +29,10 @@ export function SingleLegTestBase({ modality, onBack }: Props) {
 
   const [screen, setScreen] = useState<Screen>('form')
   const [sex, setSex] = useState<Sex | ''>('')
+  const [supportFoot, setSupportFoot] = useState<SupportFoot | ''>('')
   const [age, setAge] = useState('')
   const [ageError, setAgeError] = useState(false)
+  const [showAbandon, setShowAbandon] = useState(false)
   const [prepTime, setPrepTime] = useState(5)
   const [runPhase, setRunPhase] = useState<'prep' | 'active'>('prep')
   const [countdown, setCountdown] = useState(5)
@@ -58,7 +63,7 @@ export function SingleLegTestBase({ modality, onBack }: Props) {
   const ageNum = parseInt(age)
 
   const goToInstructions = () => {
-    if (!sex) { setAgeError(true); return }
+    if (!sex || !supportFoot) { setAgeError(true); return }
     if (isNaN(ageNum) || ageNum < 40 || ageNum > 65) { setAgeError(true); return }
     setAgeError(false)
     setPercentiles(getPercentiles(modality, sex, ageNum))
@@ -99,13 +104,22 @@ export function SingleLegTestBase({ modality, onBack }: Props) {
 
   const saveResult = useCallback((time: number) => {
     setHistory((prev) => {
-      const next = [...prev, { label: `Intento ${prev.length + 1}`, score: time }]
+      const next: HistPoint[] = [
+        ...prev,
+        {
+          label: `Intento ${prev.length + 1}`,
+          score: time,
+          foot: supportFoot || undefined,
+          sex: sex || undefined,
+          age: isNaN(ageNum) ? undefined : ageNum,
+        },
+      ]
       try { localStorage.setItem(storageKey, JSON.stringify(next)) } catch { /* */ }
       return next
     })
-  }, [storageKey])
+  }, [storageKey, supportFoot, sex, ageNum])
 
-  // Touch Anywhere: detiene la prueba
+  // Touch Anywhere: detiene la prueba (registra el resultado)
   const stopTest = () => {
     if (isPrepRef.current) {
       // Cancelar durante preparación → vuelve a instrucciones
@@ -121,6 +135,16 @@ export function SingleLegTestBase({ modality, onBack }: Props) {
     setFinalTime(time)
     saveResult(time)
     setScreen('results')
+  }
+
+  // Abandonar sin guardar: limpia timers y vuelve a instrucciones
+  const abandonTest = () => {
+    isPrepRef.current = false
+    isRunningRef.current = false
+    if (prepIntervalRef.current) clearInterval(prepIntervalRef.current)
+    if (rafRef.current) cancelAnimationFrame(rafRef.current)
+    setShowAbandon(false)
+    setScreen('instructions')
   }
 
   // ════════════════════════════════════════════════════════════════
@@ -156,11 +180,22 @@ export function SingleLegTestBase({ modality, onBack }: Props) {
               </div>
             </div>
             <div>
+              <label className="block text-sm font-semibold text-slate-600 mb-2">Pie de apoyo</label>
+              <div className="grid grid-cols-2 gap-3">
+                {(['Derecho', 'Izquierdo'] as SupportFoot[]).map((f) => (
+                  <button key={f} onClick={() => setSupportFoot(f)}
+                    className={`py-3 rounded-xl border-2 font-medium transition-colors ${supportFoot === f ? 'border-rose-400 bg-rose-50 text-rose-600' : 'border-slate-200 text-slate-500'}`}>
+                    🦶 {f}
+                  </button>
+                ))}
+              </div>
+            </div>
+            <div>
               <label className="block text-sm font-semibold text-slate-600 mb-2">Edad (40 a 65 años)</label>
               <input type="number" min={40} max={65} value={age} placeholder="Ej: 52"
                 onChange={(e) => setAge(e.target.value)}
                 className="w-full text-center text-xl py-3 rounded-xl border-2 border-slate-200 focus:border-rose-400 outline-none transition-colors" />
-              {ageError && <p className="text-rose-500 text-xs mt-1">Selecciona sexo e introduce una edad válida (40-65).</p>}
+              {ageError && <p className="text-rose-500 text-xs mt-1">Selecciona sexo, pie de apoyo e introduce una edad válida (40-65).</p>}
             </div>
           </div>
 
@@ -186,19 +221,28 @@ export function SingleLegTestBase({ modality, onBack }: Props) {
 
           <div className="bg-white p-5 rounded-3xl shadow-sm border border-slate-100 mt-4">
             <h3 className="font-bold text-rose-600 mb-2">Instrucciones</h3>
-            <ul className="text-sm text-slate-600 space-y-2 list-disc pl-4 mb-4">
-              <li>Cruza los <strong>brazos firmemente</strong> sobre el pecho, manos en los hombros opuestos.</li>
+            <ul className="text-sm text-slate-600 space-y-2 list-disc pl-4 mb-3">
+              <li>Coloca las <strong>manos en las caderas</strong>. Sujeta el móvil con una mano, manteniéndola en la cadera.</li>
               <li>Eleva el pie libre flexionando la rodilla, cerca del tobillo de apoyo, <strong>sin tocarla</strong>.</li>
               <li>{isClosed
                 ? <>Una vez estabilizado, <strong>CIERRA LOS OJOS</strong> para comenzar el registro.</>
                 : <>Fija la mirada en un punto a la altura de la vista.</>}</li>
             </ul>
+
+            {/* Cómo funciona el cronómetro */}
+            <div className="bg-blue-50 border border-blue-100 rounded-xl p-3 text-xs text-blue-800 mb-3 leading-relaxed">
+              <strong>📱 Cómo funciona el cronómetro:</strong><br />
+              Sujeta el móvil con una mano apoyada en la cadera. Cuando pierdas el equilibrio, apoyes el pie
+              elevado o cometas cualquier fallo, <strong>toca cualquier parte de la pantalla</strong> inmediatamente
+              y el cronómetro se detendrá al instante. El test mide cuántos segundos mantienes la postura.
+            </div>
+
             <div className="bg-amber-50 border border-amber-100 rounded-xl p-2.5 text-xs text-slate-500 mb-4">
               Realiza la prueba siempre en el <strong>mismo sitio</strong>, sobre superficie lisa y firme (preferiblemente descalzo).
             </div>
             <h4 className="font-bold text-sm text-rose-600 mb-1">Criterios de parada:</h4>
             <ul className="text-xs text-slate-500 space-y-1 list-disc pl-4">
-              <li>Descruzar los brazos.</li>
+              <li>Despegar las manos de las caderas.</li>
               <li>Apoyar el pie elevado en el suelo o la otra pierna.</li>
               <li>Saltar o desplazar el pie de apoyo.</li>
             </ul>
@@ -234,6 +278,19 @@ export function SingleLegTestBase({ modality, onBack }: Props) {
           onClick={stopTest}
           className={`fixed inset-0 z-[70] flex flex-col items-center justify-center p-6 cursor-pointer transition-colors duration-500 ${runPhase === 'active' ? 'bg-emerald-100' : 'bg-slate-800'}`}
         >
+          {/* Imagen de postura de referencia (no interfiere con el touch anywhere) */}
+          <img src="/images/balance-pose.png" alt="Postura correcta"
+            className="absolute bottom-4 right-4 w-40 h-40 object-contain opacity-20 pointer-events-none select-none" />
+
+          {/* Botón de abandonar (área pequeña, no dispara el touch anywhere) */}
+          <button
+            onClick={(e) => { e.stopPropagation(); setShowAbandon(true) }}
+            aria-label="Abandonar"
+            className="absolute top-4 left-4 w-9 h-9 rounded-full bg-black/20 text-white/80 hover:bg-black/40 flex items-center justify-center transition-colors z-[75]"
+          >
+            <X size={18} />
+          </button>
+
           {runPhase === 'prep' ? (
             <div className="flex flex-col items-center text-center">
               <h2 className="text-2xl font-bold text-slate-300 mb-4 tracking-widest uppercase">Prepárate</h2>
@@ -251,24 +308,41 @@ export function SingleLegTestBase({ modality, onBack }: Props) {
               <p className="absolute bottom-12 text-emerald-900 font-bold text-lg px-4 opacity-70">TOCA LA PANTALLA PARA DETENER</p>
             </div>
           )}
+
+          {/* Diálogo de abandono (envuelto para que sus clics no disparen el touch anywhere) */}
+          <div onClick={(e) => e.stopPropagation()}>
+            <ConfirmDialog
+              open={showAbandon}
+              title="Abandonar evaluación"
+              message="¿Seguro que quieres abandonar? Se perderá el progreso y no se guardará ningún resultado."
+              onConfirm={abandonTest}
+              onCancel={() => setShowAbandon(false)}
+            />
+          </div>
         </div>
       )}
 
       {/* ── RESULTS ── */}
-      {screen === 'results' && (
+      {screen === 'results' && (() => {
+        // Color del resultado según el percentil alcanzado
+        const resultColor = !percentiles ? 'from-slate-500 to-slate-700'
+          : finalTime >= percentiles.p75 ? 'from-emerald-500 to-green-700'
+          : finalTime >= percentiles.p25 ? 'from-amber-500 to-orange-600'
+          : 'from-rose-500 to-rose-700'
+        return (
         <div className="max-w-md mx-auto p-5 min-h-full flex flex-col space-y-4">
           <h2 className="text-2xl font-black text-center text-slate-800 pt-2">Resultado</h2>
 
-          {/* Hero */}
-          <div className="bg-gradient-to-br from-rose-500 to-rose-700 text-white p-6 rounded-3xl shadow-xl flex flex-col items-center relative overflow-hidden">
+          {/* Hero (color según percentil) */}
+          <div className={`bg-gradient-to-br ${resultColor} text-white p-6 rounded-3xl shadow-xl flex flex-col items-center relative overflow-hidden`}>
             <div className="absolute -right-10 -top-10 w-32 h-32 bg-white/10 rounded-full" />
-            <span className="text-rose-100 font-medium uppercase tracking-wider text-sm mb-1">Test: {modality}</span>
+            <span className="text-white/80 font-medium uppercase tracking-wider text-sm mb-1">Test: {modality}</span>
             <div className="flex items-baseline gap-1">
               <span className="text-6xl font-black tracking-tighter">{finalTime.toFixed(2)}</span>
-              <span className="text-xl font-bold text-rose-200">s</span>
+              <span className="text-xl font-bold text-white/70">s</span>
             </div>
             <div className="mt-4 bg-white/20 backdrop-blur-sm px-4 py-2 rounded-xl text-center w-full border border-white/30">
-              <p className="text-xs text-rose-100 uppercase tracking-wide">Clasificación poblacional</p>
+              <p className="text-xs text-white/80 uppercase tracking-wide">Clasificación poblacional</p>
               <p className="font-bold text-lg mt-0.5">{percentiles ? classify(finalTime, percentiles) : 'Datos no disponibles'}</p>
             </div>
           </div>
@@ -286,7 +360,8 @@ export function SingleLegTestBase({ modality, onBack }: Props) {
             <button onClick={() => setScreen('instructions')} className="bg-rose-500 text-white text-sm font-bold py-4 rounded-xl shadow-md">Nuevo intento</button>
           </div>
         </div>
-      )}
+        )
+      })()}
     </div>
   )
 }

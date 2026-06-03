@@ -1,6 +1,7 @@
 import { useState, useRef, useEffect, useCallback } from 'react'
-import { ArrowLeft, BrainCircuit, Info, RotateCcw, CheckCircle2, AlertTriangle } from 'lucide-react'
+import { ArrowLeft, BrainCircuit, Info, RotateCcw, CheckCircle2, AlertTriangle, X } from 'lucide-react'
 import { useWebAudio } from '../../../hooks/useWebAudio'
+import { ConfirmDialog } from '../../../components/ui/ConfirmDialog'
 import {
   AGE_GROUPS, getNorms, buildDiagnosis,
   type AgeGroup, type Education,
@@ -120,6 +121,7 @@ export function TrailMakingTest({ onBack }: TrailMakingTestProps) {
   const [results, setResults] = useState<Results>(EMPTY_RESULTS)
   const [isPortrait, setIsPortrait] = useState(false)
   const [feedbackTip, setFeedbackTip] = useState<string | null>(null)
+  const [showAbandon, setShowAbandon] = useState(false)
 
   // Refs para datos mutables que leen los timers (evita closures obsoletos)
   const startTimeRef = useRef(0)
@@ -143,6 +145,14 @@ export function TrailMakingTest({ onBack }: TrailMakingTestProps) {
 
   const stopTimer = useCallback(() => {
     if (timerRef.current) { clearInterval(timerRef.current); timerRef.current = null }
+  }, [])
+
+  // Abandonar la evaluación: limpia timers y vuelve a la configuración (sin guardar)
+  const abandonTest = useCallback(() => {
+    if (timerRef.current) { clearInterval(timerRef.current); timerRef.current = null }
+    setShowAbandon(false)
+    setCountdown(null)
+    setScreen('welcome')
   }, [])
 
   const startTimer = useCallback(() => {
@@ -306,8 +316,6 @@ export function TrailMakingTest({ onBack }: TrailMakingTestProps) {
     showInfo('A_PRACTICE')
   }
 
-  const nextTarget = sequence[currentIndex]
-
   // ════════════════════════════════════════════════════════════════
   // RENDER
   // ════════════════════════════════════════════════════════════════
@@ -413,11 +421,16 @@ export function TrailMakingTest({ onBack }: TrailMakingTestProps) {
 
           {/* Barra de estado */}
           <div className="flex items-center justify-between px-3 py-2 bg-slate-900 border-b border-slate-800 shrink-0">
-            <span className={`px-2 py-0.5 text-[10px] font-bold rounded-md ${part === 'A' ? 'bg-orange-900 text-orange-200' : 'bg-violet-900 text-violet-200'}`}>
-              PARTE {part} {isPractice && '· PRÁCTICA'}
-            </span>
+            <div className="flex items-center gap-2">
+              <button onClick={() => setShowAbandon(true)} aria-label="Abandonar"
+                className="w-7 h-7 rounded-full bg-slate-800 text-slate-400 hover:text-white hover:bg-slate-700 flex items-center justify-center transition-colors">
+                <X size={16} />
+              </button>
+              <span className={`px-2 py-0.5 text-[10px] font-bold rounded-md ${part === 'A' ? 'bg-orange-900 text-orange-200' : 'bg-violet-900 text-violet-200'}`}>
+                PARTE {part} {isPractice && '· PRÁCTICA'}
+              </span>
+            </div>
             <div className="flex items-center gap-4 text-right">
-              <div><span className="text-[8px] text-slate-400 block uppercase font-semibold">Objetivo</span><span className="text-sm font-extrabold text-orange-400">{countdown !== null ? '-' : (nextTarget ?? '-')}</span></div>
               <div><span className="text-[8px] text-slate-400 block uppercase font-semibold">Errores</span><span className="text-sm font-extrabold text-rose-500">{errorCount}</span></div>
               <div><span className="text-[8px] text-slate-400 block uppercase font-semibold">Tiempo</span><span className="text-sm font-mono font-bold text-emerald-400">{timerDisplay}s</span></div>
             </div>
@@ -434,42 +447,46 @@ export function TrailMakingTest({ onBack }: TrailMakingTestProps) {
                 </div>
               )}
 
-              {/* Círculos (sin líneas de conexión — validez cognitiva) */}
-              {circles.map((c) => {
-                const isTarget = c.id === currentIndex && !c.visited
-                return (
-                  <button
-                    key={c.id}
-                    onPointerDown={(e) => { e.preventDefault(); handleCircle(c.id) }}
-                    style={{
-                      left: `${c.x / 10}%`,
-                      top: `${c.y / 5.62}%`,
-                      transform: 'translate(-50%, -50%)',
-                      width: '6.8%',
-                      height: '12%',
-                      touchAction: 'manipulation',
-                    }}
-                    className={`absolute flex items-center justify-center rounded-full text-xs sm:text-sm font-extrabold shadow-md border-2 transition-colors ${
-                      c.visited
-                        ? 'bg-emerald-600 border-emerald-500 text-white pointer-events-none'
-                        : isTarget
-                          ? 'bg-white text-slate-950 border-orange-400 ring-4 ring-orange-500/40'
-                          : 'bg-white text-slate-950 border-slate-300'
-                    }`}
-                  >
-                    {c.label}
-                  </button>
-                )
-              })}
+              {/* Círculos: TODOS los no visitados se ven IGUALES (sin pista del objetivo)
+                  y sin líneas de conexión — validez cognitiva del TMT */}
+              {circles.map((c) => (
+                <button
+                  key={c.id}
+                  onPointerDown={(e) => { e.preventDefault(); handleCircle(c.id) }}
+                  style={{
+                    left: `${c.x / 10}%`,
+                    top: `${c.y / 5.62}%`,
+                    transform: 'translate(-50%, -50%)',
+                    width: '6.8%',
+                    height: '12%',
+                    touchAction: 'manipulation',
+                  }}
+                  className={`absolute flex items-center justify-center rounded-full text-xs sm:text-sm font-extrabold shadow-md border-2 transition-colors ${
+                    c.visited
+                      ? 'bg-emerald-600 border-emerald-500 text-white pointer-events-none'
+                      : 'bg-white text-slate-950 border-slate-300'
+                  }`}
+                >
+                  {c.label}
+                </button>
+              ))}
             </div>
           </div>
 
-          {/* Indicación inferior */}
+          {/* Indicación inferior (genérica, sin revelar el objetivo) */}
           <div className="px-3 py-2 bg-slate-900 border-t border-slate-800 text-center shrink-0">
             {feedbackTip
               ? <span className="text-amber-400 text-xs font-semibold">{feedbackTip}</span>
-              : <span className="text-slate-400 text-xs">Toca el círculo <strong className="text-orange-400">{nextTarget ?? '-'}</strong></span>}
+              : <span className="text-slate-500 text-xs">Conecta los círculos en el orden correcto lo más rápido posible</span>}
           </div>
+
+          <ConfirmDialog
+            open={showAbandon}
+            title="Abandonar evaluación"
+            message="¿Seguro que quieres abandonar? Se perderá el progreso de este test."
+            onConfirm={abandonTest}
+            onCancel={() => setShowAbandon(false)}
+          />
         </div>
       )}
 
