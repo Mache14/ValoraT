@@ -45,6 +45,15 @@ body {
   to   { opacity: 1; transform: translateY(0); }
 }
 
+/* Fade simple (usado por los tests portados de prototipos) */
+.fade-in {
+  animation: valoraSimpleFade 0.3s ease-in-out both;
+}
+@keyframes valoraSimpleFade {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
 /* Rebote lento (insignias y tooltips del perfil) */
 .animate-bounce-slow {
   animation: valoraBounceSlow 2.5s ease-in-out infinite;

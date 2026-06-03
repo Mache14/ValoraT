@@ -8,6 +8,8 @@ import { Sparkline, type SparklineStatus } from '../../components/ui/Sparkline'
 import { useTestsCatalogo } from '../../hooks/useTestsCatalogo'
 import { TrailMakingTest } from '../tests/tmt/TrailMakingTest'
 import { PvtBTest } from '../tests/pvt/PvtBTest'
+import { SingleLegOpenEyes } from '../tests/single-leg/SingleLegOpenEyes'
+import { SingleLegClosedEyes } from '../tests/single-leg/SingleLegClosedEyes'
 
 /**
  * Registro de tests con pantalla funcional.
@@ -17,6 +19,8 @@ import { PvtBTest } from '../tests/pvt/PvtBTest'
 const TEST_COMPONENTS: Record<string, ComponentType<{ onBack: () => void }>> = {
   tmt: TrailMakingTest,
   pvt: PvtBTest,
+  'single-leg-open': SingleLegOpenEyes,
+  'single-leg-closed': SingleLegClosedEyes,
 }
 
 /**
