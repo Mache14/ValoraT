@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
 @import "tailwindcss";
 
 :root {
@@ -7,10 +7,11 @@
   -moz-osx-font-smoothing: grayscale;
 }
 
+/* Tema CLARO (estética ValoraT estilo Gemini) */
 body {
   margin: 0;
-  background-color: #020617;
-  color: #f1f5f9;
+  background-color: #f8fafc; /* slate-50 */
+  color: #1e293b;            /* slate-800 */
   min-height: 100vh;
   overscroll-behavior-y: none;
 }
@@ -19,8 +20,42 @@ body {
   min-height: 100vh;
 }
 
-/* Scrollbar */
+/* ─── Clases utilitarias propias del diseño ValoraT ─────────────── */
+
+/* Área segura inferior (para el notch / barra de gestos en móviles) */
+.pb-safe {
+  padding-bottom: env(safe-area-inset-bottom, 0px);
+}
+
+/* Ocultar la barra de scroll (carruseles horizontales de logros) */
+.hide-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+.hide-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+
+/* Animación de entrada suave para cada pantalla */
+.animate-in {
+  animation: valoraFadeIn 0.3s ease-out both;
+}
+@keyframes valoraFadeIn {
+  from { opacity: 0; transform: translateY(8px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* Rebote lento (insignias y tooltips del perfil) */
+.animate-bounce-slow {
+  animation: valoraBounceSlow 2.5s ease-in-out infinite;
+}
+@keyframes valoraBounceSlow {
+  0%, 100% { transform: translateY(0); }
+  50%      { transform: translateY(-4px); }
+}
+
+/* Scrollbar global discreta */
 ::-webkit-scrollbar { width: 6px; }
-::-webkit-scrollbar-track { background: #1e293b; }
-::-webkit-scrollbar-thumb { background: #475569; border-radius: 3px; }
-::-webkit-scrollbar-thumb:hover { background: #64748b; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
