@@ -10,6 +10,8 @@ import { TrailMakingTest } from '../tests/tmt/TrailMakingTest'
 import { PvtBTest } from '../tests/pvt/PvtBTest'
 import { SingleLegOpenEyes } from '../tests/single-leg/SingleLegOpenEyes'
 import { SingleLegClosedEyes } from '../tests/single-leg/SingleLegClosedEyes'
+import { SitToStandTest } from '../tests/sit-to-stand/SitToStandTest'
+import { ArmCurlTest } from '../tests/arm-curl/ArmCurlTest'
 
 /**
  * Registro de tests con pantalla funcional.
@@ -21,6 +23,8 @@ const TEST_COMPONENTS: Record<string, ComponentType<{ onBack: () => void }>> = {
   pvt: PvtBTest,
   'single-leg-open': SingleLegOpenEyes,
   'single-leg-closed': SingleLegClosedEyes,
+  'sit-to-stand': SitToStandTest,
+  'arm-curl': ArmCurlTest,
 }
 
 /**
@@ -63,8 +67,8 @@ const evalsData: EvalDomain[] = [
 
 const testsDetailData: Record<string, TestDetail[]> = {
   fuerza: [
-    { title: 'STS-5 reps + 30 seg', desc: 'Evalúa la fuerza y potencia muscular del tren inferior, fundamentales para la autonomía al levantarse de una silla.', trend: [60, 65, 75, 82, 88], status: 'up', icon: MoveUp },
-    { title: '30 seg Arm Curl', desc: 'Mide la fuerza del tren superior mediante flexiones de codo con peso ligero, imitando tareas como llevar la compra.', trend: [50, 52, 55, 60, 62], status: 'up', icon: Dumbbell },
+    { title: 'STS-5 reps + 30 seg', desc: 'Evalúa la fuerza y potencia muscular del tren inferior, fundamentales para la autonomía al levantarse de una silla.', trend: [60, 65, 75, 82, 88], status: 'up', icon: MoveUp, testId: 'sit-to-stand' },
+    { title: '30 seg Arm Curl', desc: 'Mide la fuerza del tren superior mediante flexiones de codo con peso ligero, imitando tareas como llevar la compra.', trend: [50, 52, 55, 60, 62], status: 'up', icon: Dumbbell, testId: 'arm-curl' },
   ],
   equilibrio: [
     { title: 'Equilibrio Unipodal (Ojos Abiertos)', desc: 'Control postural básico. Medimos cuánto tiempo puedes mantener la postura sobre una pierna sin apoyo.', trend: [55, 50, 48, 42, 38], status: 'down', icon: Footprints, testId: 'single-leg-open' },

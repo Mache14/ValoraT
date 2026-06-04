@@ -42,6 +42,51 @@ export function useWebAudio() {
     [getCtx],
   )
 
+  /**
+   * unlock — desbloqueo de audio en iOS. DEBE llamarse SÍNCRONAMENTE dentro del
+   * handler de un click/touch del usuario, ANTES de cualquier `await`. Dispara un
+   * oscilador inaudible para registrar el "user gesture" y reanuda el AudioContext.
+   */
+  const unlock = useCallback(() => {
+    const ctx = getCtx()
+    if (!ctx) return
+    try {
+      if (ctx.state === 'suspended') ctx.resume()
+      const osc = ctx.createOscillator()
+      const g = ctx.createGain()
+      g.gain.value = 0 // silencio
+      osc.connect(g)
+      g.connect(ctx.destination)
+      osc.start()
+      osc.stop(ctx.currentTime + 0.1)
+    } catch {
+      /* */
+    }
+  }, [getCtx])
+
+  /** Pitido de metrónomo (cuenta atrás de cámara) con volumen pleno. */
+  const playBeep = useCallback(
+    (freq: number, duration: number) => {
+      const ctx = getCtx()
+      if (!ctx) return
+      try {
+        const osc = ctx.createOscillator()
+        const g = ctx.createGain()
+        osc.type = 'sine'
+        osc.frequency.value = freq
+        g.gain.setValueAtTime(1, ctx.currentTime)
+        g.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + duration)
+        osc.connect(g)
+        g.connect(ctx.destination)
+        osc.start()
+        osc.stop(ctx.currentTime + duration)
+      } catch {
+        /* */
+      }
+    },
+    [getCtx],
+  )
+
   // ── Sonidos con nombre (cubren TMT y PVT-B) ──
   const playStart = useCallback(() => playTone(880, 'sine', 0.15), [playTone])
   const playSuccess = useCallback(() => playTone(1500, 'sine', 0.1), [playTone])
@@ -66,6 +111,8 @@ export function useWebAudio() {
 
   return {
     playTone,
+    unlock,
+    playBeep,
     playStart,
     playSuccess,
     playCorrect,
