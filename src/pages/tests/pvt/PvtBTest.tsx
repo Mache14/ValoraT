@@ -2,6 +2,11 @@ import { useState, useRef, useEffect, useCallback } from 'react'
 import { ArrowLeft, Play, Zap, Trash2, CheckCircle2, AlertTriangle, Brain, X, Smartphone, Timer, MousePointerClick } from 'lucide-react'
 import { useWebAudio } from '../../../hooks/useWebAudio'
 import { ConfirmDialog } from '../../../components/ui/ConfirmDialog'
+import { PercentileGauge } from '../../../components/ui/PercentileGauge'
+import { FeedbackCard } from '../../../components/ui/FeedbackCard'
+import { estimatePercentile } from '../../../utils/percentileUtils'
+import { getFeedback } from '../../../data/testFeedbackMessages'
+import { tribeValuesFor } from '../../../data/mockTribeData'
 
 /**
  * PvtBTest — Brief Psychomotor Vigilance Task (Basner & Dinges, 2011).
@@ -431,6 +436,22 @@ export function PvtBTest({ onBack }: PvtBTestProps) {
               results.score >= 80 ? 'border-emerald-500 text-emerald-500' : results.score >= 50 ? 'border-amber-500 text-amber-500' : 'border-rose-500 text-rose-500'
             }`}>{results.score}</div>
           </div>
+
+          {/* Percentil + tribu (población por score; tribu por tiempo de reacción) */}
+          {(() => {
+            const pct = estimatePercentile(results.score, 40, 60, 80, true)
+            return (
+              <>
+                <PercentileGauge
+                  userValue={results.score} unit=" pts"
+                  p25={40} p50={60} p75={80}
+                  higherIsBetter={true} estimatedPercentile={pct} testLabel="PVT-B"
+                  tribeValues={tribeValuesFor('pvt_rt').map((rt) => -rt)} tribeUserValue={-results.meanRt}
+                />
+                <FeedbackCard feedback={getFeedback('pvt', pct)} />
+              </>
+            )
+          })()}
 
           {/* Métricas */}
           <div className="grid grid-cols-2 gap-3">

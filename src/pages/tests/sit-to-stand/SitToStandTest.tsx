@@ -3,8 +3,13 @@ import { ArrowLeft, Camera, X, CheckCircle2, Video } from 'lucide-react'
 import { useCameraRecorder } from '../../../hooks/useCameraRecorder'
 import { VideoAnalyzer, type VideoAnalyzerControls } from '../../../components/video/VideoAnalyzer'
 import { HistoryLineChart } from '../../../components/ui/HistoryLineChart'
+import { PercentileGauge } from '../../../components/ui/PercentileGauge'
+import { FeedbackCard } from '../../../components/ui/FeedbackCard'
+import { estimatePercentile } from '../../../utils/percentileUtils'
+import { getFeedback } from '../../../data/testFeedbackMessages'
+import { tribeValuesFor } from '../../../data/mockTribeData'
 import {
-  evaluateSts, TONE_CLASSES, STS_STORAGE_KEY,
+  evaluateSts, get30StsNorms, TONE_CLASSES, STS_STORAGE_KEY,
   type Gender, type StsAssessment, type StsSession,
 } from './stsNorms'
 
@@ -89,6 +94,13 @@ export function SitToStandTest({ onBack }: { onBack: () => void }) {
               <h1 className="text-xl font-bold text-slate-800">Sit-to-Stand</h1>
               <p className="text-xs text-slate-500">Evaluación combinada 5-STS y 30-STS</p>
             </div>
+          </div>
+
+          {/* Instrucciones */}
+          <div className="bg-indigo-50 border border-indigo-100 rounded-3xl p-4 mb-4 space-y-2 text-sm">
+            <p className="text-slate-700"><strong>¿Qué mide?</strong> La fuerza y potencia de tus piernas al levantarte de una silla, un marcador clave de autonomía y sarcopenia (Bohannon, 2006; Cruz-Jentoft et al., 2019).</p>
+            <p className="text-slate-700"><strong>¿Cómo?</strong> Coloca el móvil en vista lateral. Brazos cruzados sobre el pecho. Levántate y siéntate completamente, lo más rápido posible, durante 30 s.</p>
+            <p className="text-slate-700"><strong>¿Qué significa?</strong> Más repeticiones y menos tiempo en 5 levantamientos = mejor potencia muscular. Valores bajos se asocian con riesgo de caídas y pérdida de movilidad.</p>
           </div>
 
           <div className="bg-white rounded-3xl p-5 shadow-sm border border-slate-100 space-y-4">
@@ -279,6 +291,25 @@ export function SitToStandTest({ onBack }: { onBack: () => void }) {
               </div>
             </div>
           </div>
+
+          {/* Percentil + tribu + feedback (sobre el 30-STS) */}
+          {(() => {
+            const reps = parseInt(reps30) || 0
+            const n = get30StsNorms(parseInt(age), gender)
+            const p50 = Math.round((n.low + n.high) / 2)
+            const pct = estimatePercentile(reps, n.low, p50, n.high, true)
+            return (
+              <>
+                <PercentileGauge
+                  userValue={reps} unit=" reps"
+                  p25={n.low} p50={p50} p75={n.high}
+                  higherIsBetter={true} estimatedPercentile={pct} testLabel="30-STS"
+                  tribeValues={tribeValuesFor('sts30')} tribeUserValue={reps}
+                />
+                <FeedbackCard feedback={getFeedback('sts30', pct)} />
+              </>
+            )
+          })()}
 
           {/* Historial */}
           <div className="bg-white p-5 rounded-2xl shadow-sm border border-slate-100">

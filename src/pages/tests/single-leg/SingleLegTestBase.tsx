@@ -2,6 +2,11 @@ import { useState, useRef, useEffect, useCallback } from 'react'
 import { ArrowLeft, Play, Eye, EyeOff, X } from 'lucide-react'
 import { HistoryLineChart } from '../../../components/ui/HistoryLineChart'
 import { ConfirmDialog } from '../../../components/ui/ConfirmDialog'
+import { PercentileGauge } from '../../../components/ui/PercentileGauge'
+import { FeedbackCard } from '../../../components/ui/FeedbackCard'
+import { estimatePercentile } from '../../../utils/percentileUtils'
+import { getFeedback } from '../../../data/testFeedbackMessages'
+import { tribeValuesFor } from '../../../data/mockTribeData'
 import { getPercentiles, classify, type Modality, type Sex, type Percentiles } from './upstNorms'
 
 type SupportFoot = 'Derecho' | 'Izquierdo'
@@ -346,6 +351,22 @@ export function SingleLegTestBase({ modality, onBack }: Props) {
               <p className="font-bold text-lg mt-0.5">{percentiles ? classify(finalTime, percentiles) : 'Datos no disponibles'}</p>
             </div>
           </div>
+
+          {/* Percentil + tribu + feedback */}
+          {percentiles && (() => {
+            const pct = estimatePercentile(finalTime, percentiles.p25, percentiles.p50, percentiles.p75, true)
+            return (
+              <>
+                <PercentileGauge
+                  userValue={+finalTime.toFixed(1)} unit="s"
+                  p25={percentiles.p25} p50={percentiles.p50} p75={percentiles.p75}
+                  higherIsBetter={true} estimatedPercentile={pct} testLabel={isClosed ? 'Equil. OC' : 'Equil. OA'}
+                  tribeValues={tribeValuesFor(isClosed ? 'balance_oc' : 'balance_oa')} tribeUserValue={+finalTime.toFixed(1)}
+                />
+                <FeedbackCard feedback={getFeedback('balance', pct)} />
+              </>
+            )
+          })()}
 
           {/* Historial */}
           <div className="bg-white p-5 rounded-3xl shadow-sm border border-slate-100">

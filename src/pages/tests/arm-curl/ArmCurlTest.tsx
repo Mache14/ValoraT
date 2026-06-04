@@ -3,8 +3,13 @@ import { ArrowLeft, Camera, X, CheckCircle2, Video, Dumbbell } from 'lucide-reac
 import { useCameraRecorder } from '../../../hooks/useCameraRecorder'
 import { VideoAnalyzer } from '../../../components/video/VideoAnalyzer'
 import { HistoryLineChart } from '../../../components/ui/HistoryLineChart'
+import { PercentileGauge } from '../../../components/ui/PercentileGauge'
+import { FeedbackCard } from '../../../components/ui/FeedbackCard'
+import { estimatePercentile } from '../../../utils/percentileUtils'
+import { getFeedback } from '../../../data/testFeedbackMessages'
+import { tribeValuesFor } from '../../../data/mockTribeData'
 import {
-  evaluateArmCurl, dumbbellWeight, ARMCURL_TONE_CLASSES, ARMCURL_STORAGE_KEY,
+  evaluateArmCurl, dumbbellWeight, getNormativeData, ARMCURL_TONE_CLASSES, ARMCURL_STORAGE_KEY,
   type ArmCurlGender, type ArmCurlAssessment, type ArmCurlSession,
 } from './armCurlNorms'
 
@@ -82,6 +87,13 @@ export function ArmCurlTest({ onBack }: { onBack: () => void }) {
               <h1 className="text-xl font-bold text-slate-800">Arm Curl Test (30 s)</h1>
               <p className="text-xs text-slate-500">Fuerza-resistencia del tren superior</p>
             </div>
+          </div>
+
+          {/* Instrucciones */}
+          <div className="bg-indigo-50 border border-indigo-100 rounded-3xl p-4 mb-4 space-y-2 text-sm">
+            <p className="text-slate-700"><strong>¿Qué mide?</strong> La fuerza-resistencia de tus brazos (flexión de codo con mancuerna), clave para tareas cotidianas como cargar la compra (Rikli & Jones, 1999).</p>
+            <p className="text-slate-700"><strong>¿Cómo?</strong> Sentado, móvil en vista lateral. Flexiona y extiende el codo completamente con la mancuerna ({dumbbellWeight(gender)} kg), el máximo de veces en 30 s.</p>
+            <p className="text-slate-700"><strong>¿Qué significa?</strong> Más repeticiones = mejor fuerza del tren superior. Valores bajos (dinapenia) dificultan las actividades diarias y la protección ante caídas.</p>
           </div>
 
           <div className="bg-white rounded-3xl p-5 shadow-sm border border-slate-100 space-y-4">
@@ -236,6 +248,25 @@ export function ArmCurlTest({ onBack }: { onBack: () => void }) {
             <p className="text-xl font-bold mb-2">{assessment.label}</p>
             <p className="text-sm leading-relaxed opacity-90">{assessment.desc}</p>
           </div>
+
+          {/* Percentil + tribu + feedback */}
+          {(() => {
+            const r = parseInt(reps) || 0
+            const n = getNormativeData(parseInt(age), gender)
+            const p50 = Math.round((n.p25 + n.p75) / 2)
+            const pct = estimatePercentile(r, n.p25, p50, n.p75, true)
+            return (
+              <>
+                <PercentileGauge
+                  userValue={r} unit=" reps"
+                  p25={n.p25} p50={p50} p75={n.p75}
+                  higherIsBetter={true} estimatedPercentile={pct} testLabel="Arm Curl"
+                  tribeValues={tribeValuesFor('armcurl')} tribeUserValue={r}
+                />
+                <FeedbackCard feedback={getFeedback('armcurl', pct)} />
+              </>
+            )
+          })()}
 
           {/* Historial */}
           <div className="bg-white p-5 rounded-2xl shadow-sm border border-slate-100">

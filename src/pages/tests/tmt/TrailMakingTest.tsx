@@ -2,8 +2,13 @@ import { useState, useRef, useEffect, useCallback } from 'react'
 import { ArrowLeft, BrainCircuit, Info, RotateCcw, CheckCircle2, AlertTriangle, X } from 'lucide-react'
 import { useWebAudio } from '../../../hooks/useWebAudio'
 import { ConfirmDialog } from '../../../components/ui/ConfirmDialog'
+import { PercentileGauge } from '../../../components/ui/PercentileGauge'
+import { FeedbackCard } from '../../../components/ui/FeedbackCard'
+import { estimatePercentile } from '../../../utils/percentileUtils'
+import { getFeedback } from '../../../data/testFeedbackMessages'
+import { tribeValuesFor } from '../../../data/mockTribeData'
 import {
-  AGE_GROUPS, getNorms, buildDiagnosis,
+  AGE_GROUPS, getNorms, getTmtBPercentiles, buildDiagnosis,
   type AgeGroup, type Education,
 } from './tmtNorms'
 
@@ -334,6 +339,13 @@ export function TrailMakingTest({ onBack }: TrailMakingTestProps) {
             </div>
           </div>
 
+          {/* Instrucciones */}
+          <div className="bg-orange-50 border border-orange-100 rounded-3xl p-4 mb-4 space-y-2 text-sm">
+            <p className="text-slate-700"><strong>¿Qué mide?</strong> Tu velocidad de procesamiento mental y tu capacidad para alternar entre tareas (función ejecutiva), conectando círculos en orden (Tombaugh, 2004).</p>
+            <p className="text-slate-700"><strong>¿Cómo?</strong> En horizontal, conecta los números en orden (Parte A) y luego alternando números y letras: 1-A-2-B... (Parte B), lo más rápido posible.</p>
+            <p className="text-slate-700"><strong>¿Qué significa?</strong> Tiempos rápidos indican buena agilidad mental. Tiempos lentos pueden asociarse con deterioro cognitivo y se benefician de estimulación y ejercicio.</p>
+          </div>
+
           <div className="bg-white rounded-3xl p-5 shadow-sm border border-slate-100 space-y-5">
             <div>
               <label className="block text-xs font-bold text-slate-500 uppercase mb-2">Grupo de edad</label>
@@ -496,6 +508,9 @@ export function TrailMakingTest({ onBack }: TrailMakingTestProps) {
         const diff = results.timeB - results.timeA
         const ratio = results.timeA > 0 ? results.timeB / results.timeA : 0
         const diag = buildDiagnosis(results.timeA, results.timeB, norm.b)
+        const tmtP = getTmtBPercentiles(age, education)
+        const tmtPercentile = estimatePercentile(results.timeB, tmtP.p25, tmtP.p50, tmtP.p75, false)
+        const tmtFeedback = getFeedback('tmt', tmtPercentile)
         const diagStyles = {
           healthy: { dot: 'bg-emerald-500', text: 'text-emerald-600', icon: CheckCircle2 },
           mild: { dot: 'bg-amber-500', text: 'text-amber-600', icon: AlertTriangle },
@@ -559,7 +574,18 @@ export function TrailMakingTest({ onBack }: TrailMakingTestProps) {
               ))}
             </div>
 
-            {/* Diagnóstico */}
+            {/* Percentil + tribu */}
+            <PercentileGauge
+              userValue={+results.timeB.toFixed(1)} unit="s"
+              p25={tmtP.p25} p50={tmtP.p50} p75={tmtP.p75}
+              higherIsBetter={false} estimatedPercentile={tmtPercentile} testLabel="TMT-B"
+              tribeValues={tribeValuesFor('tmt_b')} tribeUserValue={+results.timeB.toFixed(1)}
+            />
+
+            {/* Feedback personalizado por percentil */}
+            <FeedbackCard feedback={tmtFeedback} />
+
+            {/* Diagnóstico técnico */}
             <div className="bg-white border border-slate-100 rounded-2xl p-4 shadow-sm">
               <div className="flex items-center gap-2 mb-1">
                 <span className={`w-3 h-3 rounded-full ${diagStyles.dot}`} />

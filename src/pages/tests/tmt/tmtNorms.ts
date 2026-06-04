@@ -41,6 +41,21 @@ export const AGE_GROUPS: AgeGroup[] = [
   '60-64', '65-69', '70-74', '75-79', '80-84', '85+',
 ]
 
+/**
+ * Percentiles aproximados de TMT-B (segundos) para un grupo de edad/educación.
+ * Tombaugh publica medias y DE; aquí se derivan p25/p50/p75 asumiendo distribución
+ * con DE ≈ 30% de la media (típico en TMT-B). Menor tiempo = mejor, por lo que
+ * p25 (mejor cuartil) es el tiempo más rápido y p75 el más lento.
+ */
+export function getTmtBPercentiles(ageGroup: AgeGroup, education: Education): { p25: number; p50: number; p75: number } {
+  const b = getNorms(ageGroup, education).b
+  return {
+    p25: +(b * 0.78).toFixed(1), // más rápido (mejor)
+    p50: +b.toFixed(1),
+    p75: +(b * 1.30).toFixed(1), // más lento (peor)
+  }
+}
+
 /** Devuelve las normas (ajustadas por educación) para un grupo de edad. */
 export function getNorms(ageGroup: AgeGroup, education: Education): TmtNorm {
   const base = TOMBAUGH_NORMS[ageGroup] ?? TOMBAUGH_NORMS['75-79']
