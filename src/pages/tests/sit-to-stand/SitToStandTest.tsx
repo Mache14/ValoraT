@@ -192,7 +192,7 @@ export function SitToStandTest({ onBack }: { onBack: () => void }) {
                   className="bg-slate-700 text-white font-bold py-4 px-4 rounded-xl active:scale-95 transition-transform">
                   <ArrowLeft size={22} />
                 </button>
-                <button onClick={recorder.startCountdown}
+                <button onClick={() => recorder.startCountdown()}
                   className="flex-1 bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-4 rounded-xl shadow-lg active:scale-95 transition-transform text-lg">
                   Empezar Cuenta Atrás
                 </button>

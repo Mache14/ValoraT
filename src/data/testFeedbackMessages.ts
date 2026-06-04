@@ -23,7 +23,7 @@ export interface PercentileFeedback {
   citation: string
 }
 
-export type FeedbackTestKey = 'tmt' | 'pvt' | 'balance' | 'sts5' | 'sts30' | 'armcurl'
+export type FeedbackTestKey = 'tmt' | 'pvt' | 'balance' | 'sts5' | 'sts30' | 'armcurl' | 'tug'
 
 const PRO_REFERRAL =
   'Se recomienda que consultes con un profesional de la salud (médico, fisioterapeuta o graduado en CAFD) para una evaluación más completa y un programa de intervención personalizado.'
@@ -308,8 +308,54 @@ const ARMCURL: PercentileFeedback[] = [
   },
 ]
 
+// ─── TUG (Timed Up and Go — movilidad funcional; percentil alto = más rápido = mejor) ───
+const TUG: PercentileFeedback[] = [
+  {
+    range: '<P25', emoji: EMOJIS['<P25'], title: 'Movilidad funcional baja — riesgo de caídas',
+    performance: 'Tu tiempo en el TUG está entre los más lentos de tu grupo, lo que indica una movilidad funcional y un equilibrio dinámico reducidos.',
+    healthImplication: 'Un TUG lento se asocia con mayor riesgo de caídas, deterioro de la marcha y posible fragilidad. Integra fuerza de piernas, equilibrio dinámico y giro de 180º; afecta a acciones como cruzar un semáforo o esquivar obstáculos.',
+    recommendation: PRO_REFERRAL + ' El entrenamiento de fuerza de piernas y equilibrio dinámico mejora notablemente la movilidad.',
+    citation: 'Podsiadlo & Richardson (1991); Shumway-Cook et al. (2000)',
+  },
+  {
+    range: 'P25-P40', emoji: EMOJIS['P25-P40'], title: 'Por debajo de la media',
+    performance: 'Tardas algo más que la media en completar el TUG. Tu movilidad funcional tiene margen de mejora.',
+    healthImplication: 'El TUG integra levantarse, caminar, girar y sentarse; reforzar estos componentes previene el riesgo de caídas a medio plazo.',
+    recommendation: 'Incorpora ejercicios de fuerza de piernas, marcha y giros controlados, con orientación profesional.',
+    citation: 'Bohannon (2006); Kear et al. (2017)',
+  },
+  {
+    range: 'P40-P60', emoji: EMOJIS['P40-P60'], title: 'En la media',
+    performance: 'Tu tiempo en el TUG está en la media de tu grupo de edad y sexo. Nivel funcional adecuado.',
+    healthImplication: 'Una movilidad media indica buena automatización de la marcha y los giros, con margen para optimizar y alejarte del umbral de riesgo.',
+    recommendation: 'Mantén un estilo de vida activo con fuerza y equilibrio para conservar y mejorar tu movilidad.',
+    citation: 'Kear et al. (2017)',
+  },
+  {
+    range: 'P60-P75', emoji: EMOJIS['P60-P75'], title: 'Por encima de la media',
+    performance: 'Completas el TUG más rápido que la media. Tu coordinación neuromuscular y equilibrio dinámico son buenos.',
+    healthImplication: 'Una buena movilidad funcional se asocia con bajo riesgo de caídas y buena reserva de fuerza y equilibrio.',
+    recommendation: 'Mantén y progresa con ejercicios de potencia y equilibrio dinámico.',
+    citation: 'Bohannon (2006)',
+  },
+  {
+    range: 'P75-P90', emoji: EMOJIS['P75-P90'], title: 'Movilidad excelente',
+    performance: 'Tu tiempo está entre los mejores de tu grupo: una movilidad funcional muy sólida.',
+    healthImplication: 'Este nivel es un fuerte factor protector frente a caídas y refleja una excelente integración de fuerza, equilibrio y control motor.',
+    recommendation: '¡Muy bien! Tu movilidad es un referente para tu tribu.',
+    citation: 'Podsiadlo & Richardson (1991)',
+  },
+  {
+    range: 'P90-P100', emoji: EMOJIS['P90-P100'], title: 'Movilidad de élite (top 10%)',
+    performance: 'Te sitúas en el 10% más rápido de tu grupo: una movilidad funcional extraordinaria.',
+    healthImplication: 'Una movilidad tan alta protege activamente frente a caídas y es señal de un sistema neuromuscular y de control motor muy eficiente.',
+    recommendation: 'Mantén tu entrenamiento: estás en un nivel óptimo de movilidad y coordinación.',
+    citation: 'Bohannon (2006); Kear et al. (2017)',
+  },
+]
+
 export const FEEDBACK_MESSAGES: Record<FeedbackTestKey, PercentileFeedback[]> = {
-  tmt: TMT, pvt: PVT, balance: BALANCE, sts5: STS5, sts30: STS30, armcurl: ARMCURL,
+  tmt: TMT, pvt: PVT, balance: BALANCE, sts5: STS5, sts30: STS30, armcurl: ARMCURL, tug: TUG,
 }
 
 export const FEEDBACK_TEST_NAMES: Record<FeedbackTestKey, string> = {
@@ -319,6 +365,7 @@ export const FEEDBACK_TEST_NAMES: Record<FeedbackTestKey, string> = {
   sts5: 'Sit-to-Stand 5 repeticiones (5-STS)',
   sts30: 'Sit-to-Stand 30 segundos (30-STS)',
   armcurl: 'Arm Curl Test 30 s',
+  tug: 'Timed Up and Go (TUG)',
 }
 
 /** Devuelve el mensaje de feedback de un test para un percentil dado (0-100). */

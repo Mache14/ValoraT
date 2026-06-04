@@ -12,6 +12,7 @@ import { SingleLegOpenEyes } from '../tests/single-leg/SingleLegOpenEyes'
 import { SingleLegClosedEyes } from '../tests/single-leg/SingleLegClosedEyes'
 import { SitToStandTest } from '../tests/sit-to-stand/SitToStandTest'
 import { ArmCurlTest } from '../tests/arm-curl/ArmCurlTest'
+import { TugTest } from '../tests/tug/TugTest'
 
 /**
  * Registro de tests con pantalla funcional.
@@ -25,6 +26,7 @@ const TEST_COMPONENTS: Record<string, ComponentType<{ onBack: () => void }>> = {
   'single-leg-closed': SingleLegClosedEyes,
   'sit-to-stand': SitToStandTest,
   'arm-curl': ArmCurlTest,
+  tug: TugTest,
 }
 
 /**
@@ -79,7 +81,7 @@ const testsDetailData: Record<string, TestDetail[]> = {
     { title: 'PVT-B', desc: 'Brief Psychomotor Task. Mide tu tiempo de reacción y estado de alerta para prevenir accidentes diarios.', trend: [80, 75, 60, 40, 25], status: 'down', icon: TargetIcon, testId: 'pvt' },
   ],
   coordinacion: [
-    { title: 'Time Up and Go (TUG)', desc: 'Prueba de agilidad y equilibrio dinámico. Mide el tiempo en levantarse, caminar 3 metros y volver a sentarse.', trend: [75, 70, 65, 62, 60], status: 'down', icon: Timer },
+    { title: 'Time Up and Go (TUG)', desc: 'Prueba de agilidad y equilibrio dinámico. Mide el tiempo en levantarse, caminar 3 metros y volver a sentarse.', trend: [75, 70, 65, 62, 60], status: 'down', icon: Timer, testId: 'tug' },
     { title: 'Pases con pelota alternos', desc: 'Coordinación óculo-manual. Lanzar y recibir una pelota contra la pared alternando las manos de forma fluida.', trend: [80, 78, 70, 65, 60], status: 'down', icon: Activity },
   ],
   antropometria: [
