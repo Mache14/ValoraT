@@ -1,6 +1,6 @@
 /**
  * testFeedbackMessages.ts — Mensajes de feedback personalizados por rango de percentil.
- * 8 tests × 6 rangos = 48 mensajes. Toda afirmación clínica lleva referencia real.
+ * 9 tests × 6 rangos = 54 mensajes. Toda afirmación clínica lleva referencia real.
  *
  * Referencias empleadas (artículos consolidados):
  *  - TMT:      Tombaugh (2004); Reitan (1958); Lezak et al. (2012)
@@ -11,6 +11,7 @@
  *  - Arm Curl: Rikli & Jones (1999, 2013)
  *  - TUG:      Podsiadlo & Richardson (1991); Bohannon (2006); Kear et al. (2017)
  *  - AHWTT:    Rikli & Jones (2013); Hoeger & Hoeger; Seidler et al. (2010); Swinnen (2002)
+ *  - Hooper:   Hooper & Mackinnon (1995); Saw et al. (2016); Milewski et al. (2014); McEwen (2008); Meeusen et al. (2013)
  */
 
 import { percentileToRange, type PercentileRange } from '../utils/percentileUtils'
@@ -25,7 +26,7 @@ export interface PercentileFeedback {
   citation: string
 }
 
-export type FeedbackTestKey = 'tmt' | 'pvt' | 'balance' | 'sts5' | 'sts30' | 'armcurl' | 'tug' | 'balltoss'
+export type FeedbackTestKey = 'tmt' | 'pvt' | 'balance' | 'sts5' | 'sts30' | 'armcurl' | 'tug' | 'balltoss' | 'hooper'
 
 const PRO_REFERRAL =
   'Se recomienda que consultes con un profesional de la salud (médico, fisioterapeuta o graduado en CAFD) para una evaluación más completa y un programa de intervención personalizado.'
@@ -402,8 +403,54 @@ const BALLTOSS: PercentileFeedback[] = [
   },
 ]
 
+// ─── Hooper (Índice de Hooper-Mackinnon — bienestar subjetivo; mayor puntuación = mejor) ───
+const HOOPER: PercentileFeedback[] = [
+  {
+    range: '<P25', emoji: EMOJIS['<P25'], title: 'Bienestar muy bajo',
+    performance: 'Tu puntuación de bienestar de hoy es muy baja: refleja una marcada combinación de fatiga, mal descanso, dolor, estrés elevado y/o ánimo deprimido.',
+    healthImplication: 'Una puntuación tan baja, sobre todo si se repite, es un signo de alarma de sobreentrenamiento o sobrecarga psicofísica: la privación de sueño deteriora la cognición y eleva el riesgo de lesión, y el estrés sostenido aumenta el cortisol con efectos inmunológicos y cardiovasculares.',
+    recommendation: PRO_REFERRAL + ' Si la puntuación se mantiene baja varios días consecutivos, consulta con un profesional de la salud (médico, psicólogo deportivo o preparador físico). Hoy prioriza descanso, sueño y reducción de carga.',
+    citation: 'Hooper & Mackinnon (1995); McEwen (2008); Milewski et al. (2014)',
+  },
+  {
+    range: 'P25-P40', emoji: EMOJIS['P25-P40'], title: 'Bienestar por debajo de lo habitual',
+    performance: 'Tu bienestar de hoy está por debajo de lo deseable. Alguna dimensión (sueño, estrés, fatiga, dolor o ánimo) está penalizando tu estado general.',
+    healthImplication: 'Mantenerte varios días en esta franja puede reflejar una recuperación incompleta y un riesgo creciente de fatiga acumulada.',
+    recommendation: 'Regula la intensidad de tu actividad hoy y cuida la higiene del sueño y la gestión del estrés. Si el patrón persiste, busca orientación profesional.',
+    citation: 'Hooper & Mackinnon (1995); Saw et al. (2016)',
+  },
+  {
+    range: 'P40-P60', emoji: EMOJIS['P40-P60'], title: 'Bienestar moderado',
+    performance: 'Tu bienestar de hoy es moderado: ni señales de alarma ni un estado óptimo. Es un punto de partida razonable.',
+    healthImplication: 'Un bienestar medio indica una adaptación aceptable a la carga, con margen para mejorar el sueño, la recuperación y la gestión del estrés.',
+    recommendation: 'Continúa con tu planificación habitual y observa la tendencia de los próximos días para detectar mejoras o caídas.',
+    citation: 'Saw et al. (2016)',
+  },
+  {
+    range: 'P60-P75', emoji: EMOJIS['P60-P75'], title: 'Buen bienestar',
+    performance: 'Tu bienestar de hoy es bueno: te sientes razonablemente descansado, con poco dolor y estrés y un buen ánimo.',
+    healthImplication: 'Un buen estado subjetivo se asocia con una correcta asimilación de la carga y una baja probabilidad de fatiga del sistema nervioso central.',
+    recommendation: 'Buen día para afrontar demandas físicas o mentales exigentes. Mantén tus hábitos de descanso.',
+    citation: 'Hooper & Mackinnon (1995)',
+  },
+  {
+    range: 'P75-P90', emoji: EMOJIS['P75-P90'], title: 'Bienestar excelente',
+    performance: 'Tu bienestar de hoy es excelente: descanso, energía, ausencia de dolor, calma y ánimo positivo se combinan favorablemente.',
+    healthImplication: 'Este nivel refleja una homeostasis muy favorable y una alta capacidad de respuesta y adaptación a la carga.',
+    recommendation: 'Estás en un estado óptimo. Aprovéchalo y sigue monitorizando para conservar la tendencia.',
+    citation: 'Saw et al. (2016); Hooper & Mackinnon (1995)',
+  },
+  {
+    range: 'P90-P100', emoji: EMOJIS['P90-P100'], title: 'Bienestar óptimo (homeostasis)',
+    performance: 'Tu puntuación está en lo más alto: un estado de bienestar prácticamente pleno en las cinco dimensiones.',
+    healthImplication: 'Una homeostasis tan favorable es señal de excelente recuperación y baja fatiga central, el mejor escenario para el rendimiento físico y cognitivo.',
+    recommendation: '¡Aprovecha este pico! Mantén tu sueño, tu manejo del estrés y una carga equilibrada para sostenerlo.',
+    citation: 'Hooper & Mackinnon (1995)',
+  },
+]
+
 export const FEEDBACK_MESSAGES: Record<FeedbackTestKey, PercentileFeedback[]> = {
-  tmt: TMT, pvt: PVT, balance: BALANCE, sts5: STS5, sts30: STS30, armcurl: ARMCURL, tug: TUG, balltoss: BALLTOSS,
+  tmt: TMT, pvt: PVT, balance: BALANCE, sts5: STS5, sts30: STS30, armcurl: ARMCURL, tug: TUG, balltoss: BALLTOSS, hooper: HOOPER,
 }
 
 export const FEEDBACK_TEST_NAMES: Record<FeedbackTestKey, string> = {
@@ -415,6 +462,7 @@ export const FEEDBACK_TEST_NAMES: Record<FeedbackTestKey, string> = {
   armcurl: 'Arm Curl Test 30 s',
   tug: 'Timed Up and Go (TUG)',
   balltoss: 'Alternate Hand Wall Toss Test (AHWTT)',
+  hooper: 'Índice de Hooper-Mackinnon (Bienestar)',
 }
 
 /** Devuelve el mensaje de feedback de un test para un percentil dado (0-100). */

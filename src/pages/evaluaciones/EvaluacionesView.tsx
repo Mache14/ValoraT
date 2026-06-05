@@ -14,6 +14,7 @@ import { SitToStandTest } from '../tests/sit-to-stand/SitToStandTest'
 import { ArmCurlTest } from '../tests/arm-curl/ArmCurlTest'
 import { TugTest } from '../tests/tug/TugTest'
 import { BallTossTest } from '../tests/ball-toss/BallTossTest'
+import { HooperTest } from '../tests/hooper/HooperTest'
 
 /**
  * Registro de tests con pantalla funcional.
@@ -29,6 +30,7 @@ const TEST_COMPONENTS: Record<string, ComponentType<{ onBack: () => void }>> = {
   'arm-curl': ArmCurlTest,
   tug: TugTest,
   'ball-toss': BallTossTest,
+  hooper: HooperTest,
 }
 
 /**
@@ -99,7 +101,7 @@ const testsDetailData: Record<string, TestDetail[]> = {
     { title: '6 Min Walk Test', desc: 'Prueba de oro para la capacidad aeróbica. Mide la distancia máxima que puedes caminar en 6 minutos.', trend: [65, 68, 70, 74, 75], status: 'stable', icon: Footprints },
   ],
   calidad: [
-    { title: 'Índice de Hooper-Mackinnon', desc: 'Cuestionario de 5 ítems para monitorizar el bienestar subjetivo (sueño, estrés, fatiga y dolor muscular).', trend: [70, 75, 80, 82, 85], status: 'up', icon: ListChecks },
+    { title: 'Índice de Hooper-Mackinnon', desc: 'Cuestionario de 5 ítems para monitorizar el bienestar subjetivo (sueño, estrés, fatiga y dolor muscular).', trend: [70, 75, 80, 82, 85], status: 'up', icon: ListChecks, testId: 'hooper' },
     { title: 'Cuestionario IPAQ', desc: 'Registro internacional para cuantificar tus niveles de actividad física diaria y hábitos sedentarios.', trend: [60, 70, 75, 80, 85], status: 'up', icon: Activity },
   ],
 }
