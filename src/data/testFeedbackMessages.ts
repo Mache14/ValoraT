@@ -1,6 +1,6 @@
 /**
  * testFeedbackMessages.ts — Mensajes de feedback personalizados por rango de percentil.
- * 6 tests × 6 rangos = 36 mensajes. Toda afirmación clínica lleva referencia real.
+ * 8 tests × 6 rangos = 48 mensajes. Toda afirmación clínica lleva referencia real.
  *
  * Referencias empleadas (artículos consolidados):
  *  - TMT:      Tombaugh (2004); Reitan (1958); Lezak et al. (2012)
@@ -9,6 +9,8 @@
  *  - 5-STS:    Bohannon (2006); Cruz-Jentoft et al. (2019, EWGSOP2)
  *  - 30-STS:   Rikli & Jones (1999, 2013); Cossio-Bolaños et al. (2024)
  *  - Arm Curl: Rikli & Jones (1999, 2013)
+ *  - TUG:      Podsiadlo & Richardson (1991); Bohannon (2006); Kear et al. (2017)
+ *  - AHWTT:    Rikli & Jones (2013); Hoeger & Hoeger; Seidler et al. (2010); Swinnen (2002)
  */
 
 import { percentileToRange, type PercentileRange } from '../utils/percentileUtils'
@@ -23,7 +25,7 @@ export interface PercentileFeedback {
   citation: string
 }
 
-export type FeedbackTestKey = 'tmt' | 'pvt' | 'balance' | 'sts5' | 'sts30' | 'armcurl' | 'tug'
+export type FeedbackTestKey = 'tmt' | 'pvt' | 'balance' | 'sts5' | 'sts30' | 'armcurl' | 'tug' | 'balltoss'
 
 const PRO_REFERRAL =
   'Se recomienda que consultes con un profesional de la salud (médico, fisioterapeuta o graduado en CAFD) para una evaluación más completa y un programa de intervención personalizado.'
@@ -354,8 +356,54 @@ const TUG: PercentileFeedback[] = [
   },
 ]
 
+// ─── AHWTT (Alternate Hand Wall Toss — coordinación óculo-manual bilateral; más recepciones = mejor) ───
+const BALLTOSS: PercentileFeedback[] = [
+  {
+    range: '<P25', emoji: EMOJIS['<P25'], title: 'Coordinación óculo-manual baja',
+    performance: 'Tu número de recepciones te sitúa en el 25% más bajo de tu grupo de edad y sexo, lo que indica una coordinación visomotora bilateral por debajo de lo esperado.',
+    healthImplication: 'Una coordinación ojo-mano reducida disminuye la capacidad reactiva ante objetos que caen y se asocia con mayor riesgo de caídas; los déficits marcados en tareas bimanuales pueden reflejar una integración visomotora o cerebelosa comprometida.',
+    recommendation: PRO_REFERRAL + ' El entrenamiento de lanzar y atrapar, los juegos de raqueta y los ejercicios bimanuales mejoran la coordinación.',
+    citation: 'Rikli & Jones (2013); Seidler et al. (2010)',
+  },
+  {
+    range: 'P25-P40', emoji: EMOJIS['P25-P40'], title: 'Por debajo de la media',
+    performance: 'Realizas menos recepciones que la media. Tu coordinación óculo-manual y tu timing bimanual tienen margen de mejora.',
+    healthImplication: 'La coordinación bilateral sostiene actividades cotidianas que requieren manipular objetos con ambas manos (cocinar, vestirse, llevar la compra) y la capacidad de reaccionar con rapidez.',
+    recommendation: 'Practica ejercicios de lanzamiento y recepción, juegos de pelota y tareas que combinen ambas manos, idealmente con orientación profesional.',
+    citation: 'Hoeger & Hoeger; Rikli & Jones (2013)',
+  },
+  {
+    range: 'P40-P60', emoji: EMOJIS['P40-P60'], title: 'En la media',
+    performance: 'Tu número de recepciones está en la media de tu grupo de edad y sexo. Es un nivel de coordinación óculo-manual aceptable.',
+    healthImplication: 'Una coordinación media indica una integración visomotora conservada, con margen para optimizar la anticipación temporal y el ajuste de la fuerza de lanzamiento.',
+    recommendation: 'Mantén la práctica de habilidades de coordinación (deportes de raqueta, malabares, lanzar y atrapar) para seguir progresando.',
+    citation: 'Rikli & Jones (2013)',
+  },
+  {
+    range: 'P60-P75', emoji: EMOJIS['P60-P75'], title: 'Por encima de la media',
+    performance: 'Atrapas más veces que la media. Tu coordinación óculo-manual y tu control bimanual son buenos.',
+    healthImplication: 'Una buena coordinación visomotora se asocia con una respuesta motora ágil y eficiente y con menor riesgo de caídas por una mejor capacidad reactiva.',
+    recommendation: 'Mantén y progresa con variantes más exigentes (mayor velocidad, más distancia o una pelota más pequeña).',
+    citation: 'Swinnen (2002); Rikli & Jones (2013)',
+  },
+  {
+    range: 'P75-P90', emoji: EMOJIS['P75-P90'], title: 'Coordinación excelente',
+    performance: 'Tu rendimiento está entre los mejores de tu grupo: una coordinación óculo-manual bilateral destacada.',
+    healthImplication: 'Este nivel refleja una excelente integración visomotora y cerebelosa, con una anticipación temporal y una transferencia interhemisférica muy eficientes.',
+    recommendation: '¡Muy bien! Tu coordinación es un referente para tu tribu.',
+    citation: 'Bernard & Seidler (2014)',
+  },
+  {
+    range: 'P90-P100', emoji: EMOJIS['P90-P100'], title: 'Coordinación de élite (top 10%)',
+    performance: 'Te sitúas en el 10% superior: una coordinación óculo-manual bilateral extraordinaria para tu edad y sexo.',
+    healthImplication: 'Una coordinación tan alta es señal de un sistema visomotor y cerebeloso muy eficiente y un potente factor protector frente a caídas y a la pérdida de destreza con la edad.',
+    recommendation: 'Mantén tu práctica: este nivel es una de tus mejores defensas para la destreza y la reactividad.',
+    citation: 'Rikli & Jones (2013); Seidler et al. (2010)',
+  },
+]
+
 export const FEEDBACK_MESSAGES: Record<FeedbackTestKey, PercentileFeedback[]> = {
-  tmt: TMT, pvt: PVT, balance: BALANCE, sts5: STS5, sts30: STS30, armcurl: ARMCURL, tug: TUG,
+  tmt: TMT, pvt: PVT, balance: BALANCE, sts5: STS5, sts30: STS30, armcurl: ARMCURL, tug: TUG, balltoss: BALLTOSS,
 }
 
 export const FEEDBACK_TEST_NAMES: Record<FeedbackTestKey, string> = {
@@ -366,6 +414,7 @@ export const FEEDBACK_TEST_NAMES: Record<FeedbackTestKey, string> = {
   sts30: 'Sit-to-Stand 30 segundos (30-STS)',
   armcurl: 'Arm Curl Test 30 s',
   tug: 'Timed Up and Go (TUG)',
+  balltoss: 'Alternate Hand Wall Toss Test (AHWTT)',
 }
 
 /** Devuelve el mensaje de feedback de un test para un percentil dado (0-100). */

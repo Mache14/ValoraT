@@ -13,6 +13,7 @@ import { SingleLegClosedEyes } from '../tests/single-leg/SingleLegClosedEyes'
 import { SitToStandTest } from '../tests/sit-to-stand/SitToStandTest'
 import { ArmCurlTest } from '../tests/arm-curl/ArmCurlTest'
 import { TugTest } from '../tests/tug/TugTest'
+import { BallTossTest } from '../tests/ball-toss/BallTossTest'
 
 /**
  * Registro de tests con pantalla funcional.
@@ -27,6 +28,7 @@ const TEST_COMPONENTS: Record<string, ComponentType<{ onBack: () => void }>> = {
   'sit-to-stand': SitToStandTest,
   'arm-curl': ArmCurlTest,
   tug: TugTest,
+  'ball-toss': BallTossTest,
 }
 
 /**
@@ -82,7 +84,7 @@ const testsDetailData: Record<string, TestDetail[]> = {
   ],
   coordinacion: [
     { title: 'Time Up and Go (TUG)', desc: 'Prueba de agilidad y equilibrio dinámico. Mide el tiempo en levantarse, caminar 3 metros y volver a sentarse.', trend: [75, 70, 65, 62, 60], status: 'down', icon: Timer, testId: 'tug' },
-    { title: 'Pases con pelota alternos', desc: 'Coordinación óculo-manual. Lanzar y recibir una pelota contra la pared alternando las manos de forma fluida.', trend: [80, 78, 70, 65, 60], status: 'down', icon: Activity },
+    { title: 'Pases con pelota alternos', desc: 'Coordinación óculo-manual. Lanzar y recibir una pelota contra la pared alternando las manos de forma fluida.', trend: [80, 78, 70, 65, 60], status: 'down', icon: Activity, testId: 'ball-toss' },
   ],
   antropometria: [
     { title: 'Bioimpedancia', desc: 'Análisis de la composición corporal (porcentaje de grasa, músculo y agua) mediante una báscula inteligente.', trend: [60, 65, 70, 75, 81], status: 'up', icon: Zap },
