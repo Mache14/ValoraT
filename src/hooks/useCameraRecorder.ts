@@ -37,8 +37,10 @@ export function useCameraRecorder() {
   const canceledRef = useRef(false)
   const prepTimeRef = useRef(prepTime)
   prepTimeRef.current = prepTime
-  // Modo de grabación: 'fixed' (30 s, STS/Arm Curl) | 'manual' (parada manual, TUG)
+  // Modo de grabación: 'fixed' (duración fija, STS/Arm Curl/Ball Toss) | 'manual' (parada manual, TUG)
   const recordModeRef = useRef<'fixed' | 'manual'>('fixed')
+  // Duración de la grabación fija (s); por defecto 30, configurable (p. ej. 120 en el 2-Min Step)
+  const recordSecondsRef = useRef<number>(RECORD_SECONDS)
 
   // Limpieza global al desmontar
   useEffect(() => {
@@ -117,9 +119,10 @@ export function useCameraRecorder() {
 
   /** Inicia la cuenta atrás de preparación; al acabar arranca la grabación.
    * @param mode 'fixed' = 30 s automáticos (STS/Arm Curl) | 'manual' = parada manual (TUG) */
-  const startCountdown = useCallback((mode: 'fixed' | 'manual' = 'fixed') => {
+  const startCountdown = useCallback((mode: 'fixed' | 'manual' = 'fixed', recordSeconds?: number) => {
     audio.unlock()
     recordModeRef.current = mode
+    if (recordSeconds && recordSeconds > 0) recordSecondsRef.current = recordSeconds
     if (!recorderRef.current && streamRef.current) {
       const rec = new MediaRecorder(streamRef.current)
       rec.ondataavailable = (e) => { if (e.data.size > 0 && !canceledRef.current) chunksRef.current.push(e.data) }
@@ -182,8 +185,8 @@ export function useCameraRecorder() {
       return
     }
 
-    // Modo fijo (30 s)
-    let timeLeft = RECORD_SECONDS
+    // Modo fijo (duración configurable, por defecto 30 s)
+    let timeLeft = recordSecondsRef.current
     setCountdown(timeLeft)
     intervalRef.current = window.setInterval(() => {
       if (canceledRef.current) { if (intervalRef.current) clearInterval(intervalRef.current); return }

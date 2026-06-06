@@ -15,6 +15,8 @@ import { ArmCurlTest } from '../tests/arm-curl/ArmCurlTest'
 import { TugTest } from '../tests/tug/TugTest'
 import { BallTossTest } from '../tests/ball-toss/BallTossTest'
 import { HooperTest } from '../tests/hooper/HooperTest'
+import { Step2MinTest } from '../tests/step-2min/Step2MinTest'
+import { SixMinuteWalkTest } from '../tests/6mwt/SixMinuteWalkTest'
 
 /**
  * Registro de tests con pantalla funcional.
@@ -31,6 +33,8 @@ const TEST_COMPONENTS: Record<string, ComponentType<{ onBack: () => void }>> = {
   tug: TugTest,
   'ball-toss': BallTossTest,
   hooper: HooperTest,
+  'step-2min': Step2MinTest,
+  '6mwt': SixMinuteWalkTest,
 }
 
 /**
@@ -97,8 +101,8 @@ const testsDetailData: Record<string, TestDetail[]> = {
     { title: 'Back Scratch Test', desc: 'Flexibilidad del tren superior (hombros). Nos indica la facilidad para realizar tareas como vestirse.', trend: [75, 80, 85, 90, 92], status: 'up', icon: Activity },
   ],
   resistencia: [
-    { title: '2 Minute Step Test', desc: 'Evalúa la resistencia aeróbica marchando en el sitio, levantando las rodillas a una altura determinada.', trend: [60, 65, 70, 72, 75], status: 'stable', icon: HeartPulse },
-    { title: '6 Min Walk Test', desc: 'Prueba de oro para la capacidad aeróbica. Mide la distancia máxima que puedes caminar en 6 minutos.', trend: [65, 68, 70, 74, 75], status: 'stable', icon: Footprints },
+    { title: '2 Minute Step Test', desc: 'Evalúa la resistencia aeróbica marchando en el sitio, levantando las rodillas a una altura determinada.', trend: [60, 65, 70, 72, 75], status: 'stable', icon: HeartPulse, testId: 'step-2min' },
+    { title: '6 Min Walk Test', desc: 'Prueba de oro para la capacidad aeróbica. Mide la distancia máxima que puedes caminar en 6 minutos.', trend: [65, 68, 70, 74, 75], status: 'stable', icon: Footprints, testId: '6mwt' },
   ],
   calidad: [
     { title: 'Índice de Hooper-Mackinnon', desc: 'Cuestionario de 5 ítems para monitorizar el bienestar subjetivo (sueño, estrés, fatiga y dolor muscular).', trend: [70, 75, 80, 82, 85], status: 'up', icon: ListChecks, testId: 'hooper' },

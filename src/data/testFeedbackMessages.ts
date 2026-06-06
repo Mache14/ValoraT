@@ -1,6 +1,6 @@
 /**
  * testFeedbackMessages.ts — Mensajes de feedback personalizados por rango de percentil.
- * 9 tests × 6 rangos = 54 mensajes. Toda afirmación clínica lleva referencia real.
+ * 11 tests × 6 rangos = 66 mensajes. Toda afirmación clínica lleva referencia real.
  *
  * Referencias empleadas (artículos consolidados):
  *  - TMT:      Tombaugh (2004); Reitan (1958); Lezak et al. (2012)
@@ -12,6 +12,8 @@
  *  - TUG:      Podsiadlo & Richardson (1991); Bohannon (2006); Kear et al. (2017)
  *  - AHWTT:    Rikli & Jones (2013); Hoeger & Hoeger; Seidler et al. (2010); Swinnen (2002)
  *  - Hooper:   Hooper & Mackinnon (1995); Saw et al. (2016); Milewski et al. (2014); McEwen (2008); Meeusen et al. (2013)
+ *  - 2-Min Step: Rikli & Jones (2013); ACSM (2021)
+ *  - 6MWT:     Enright & Sherrill (1998); Casanova et al. (2011); ATS (2002)
  */
 
 import { percentileToRange, type PercentileRange } from '../utils/percentileUtils'
@@ -26,7 +28,7 @@ export interface PercentileFeedback {
   citation: string
 }
 
-export type FeedbackTestKey = 'tmt' | 'pvt' | 'balance' | 'sts5' | 'sts30' | 'armcurl' | 'tug' | 'balltoss' | 'hooper'
+export type FeedbackTestKey = 'tmt' | 'pvt' | 'balance' | 'sts5' | 'sts30' | 'armcurl' | 'tug' | 'balltoss' | 'hooper' | 'step2min' | '6mwt'
 
 const PRO_REFERRAL =
   'Se recomienda que consultes con un profesional de la salud (médico, fisioterapeuta o graduado en CAFD) para una evaluación más completa y un programa de intervención personalizado.'
@@ -449,8 +451,100 @@ const HOOPER: PercentileFeedback[] = [
   },
 ]
 
+// ─── 2-Minute Step Test (resistencia aeróbica domiciliaria; más pasos = mejor) ───
+const STEP2MIN: PercentileFeedback[] = [
+  {
+    range: '<P25', emoji: EMOJIS['<P25'], title: 'Resistencia aeróbica baja',
+    performance: 'Tu número de pasos en 2 minutos te sitúa por debajo del P25 de tu grupo: una capacidad cardiorrespiratoria reducida.',
+    healthImplication: 'Una baja resistencia aeróbica (fenotipo vulnerable) se asocia con menor autonomía, fatiga en actividades cotidianas y mayor riesgo cardiovascular y de fragilidad.',
+    recommendation: PRO_REFERRAL + ' El ejercicio aeróbico progresivo (caminar, marcha, bici) mejora rápidamente este parámetro.',
+    citation: 'Rikli & Jones (2013); ACSM (2021)',
+  },
+  {
+    range: 'P25-P40', emoji: EMOJIS['P25-P40'], title: 'Por debajo de la media',
+    performance: 'Realizas menos pasos que la media. Tu reserva cardiorrespiratoria tiene margen de mejora.',
+    healthImplication: 'La capacidad aeróbica sostiene la energía diaria y protege la salud cardiometabólica.',
+    recommendation: 'Añade 20-30 min de actividad aeróbica moderada casi a diario, con orientación profesional.',
+    citation: 'Rikli & Jones (2013)',
+  },
+  {
+    range: 'P40-P60', emoji: EMOJIS['P40-P60'], title: 'En la media',
+    performance: 'Tu número de pasos está en la media de tu grupo de edad y sexo. Nivel funcional adecuado.',
+    healthImplication: 'Una resistencia media indica una capacidad cardiorrespiratoria conservada.',
+    recommendation: 'Mantén la actividad aeróbica regular y busca progresar en duración o intensidad.',
+    citation: 'Rikli & Jones (2013)',
+  },
+  {
+    range: 'P60-P75', emoji: EMOJIS['P60-P75'], title: 'Por encima de la media',
+    performance: 'Haces más pasos que la media. Buena reserva cardiorrespiratoria.',
+    healthImplication: 'Una buena capacidad aeróbica reduce el riesgo cardiovascular y mejora la resistencia a la fatiga.',
+    recommendation: 'Mantén y progresa con intervalos o mayor volumen aeróbico.',
+    citation: 'Rikli & Jones (2013)',
+  },
+  {
+    range: 'P75-P90', emoji: EMOJIS['P75-P90'], title: 'Resistencia excelente',
+    performance: 'Tu rendimiento está entre los mejores de tu grupo: una resistencia aeróbica destacada.',
+    healthImplication: 'Excelente reserva cardiorrespiratoria, un fuerte factor protector cardiometabólico.',
+    recommendation: '¡Muy bien! Tu capacidad aeróbica es un referente para tu tribu.',
+    citation: 'Rikli & Jones (2013)',
+  },
+  {
+    range: 'P90-P100', emoji: EMOJIS['P90-P100'], title: 'Resistencia de élite (top 10%)',
+    performance: 'Te sitúas en el 10% superior: una capacidad cardiorrespiratoria extraordinaria para tu edad y sexo.',
+    healthImplication: 'Una reserva aeróbica tan alta es una de las mejores defensas frente al declive funcional y cardiovascular.',
+    recommendation: 'Mantén tu entrenamiento: estás en un nivel óptimo de salud aeróbica.',
+    citation: 'Rikli & Jones (2013)',
+  },
+]
+
+// ─── 6-Minute Walk Test (capacidad aeróbica máxima; más distancia = mejor) ───
+const SIXMWT: PercentileFeedback[] = [
+  {
+    range: '<P25', emoji: EMOJIS['<P25'], title: 'Capacidad aeróbica baja — riesgo funcional',
+    performance: 'Tu distancia recorrida queda por debajo del Límite Inferior de Normalidad para tu perfil: una capacidad aeróbica máxima reducida.',
+    healthImplication: 'Una distancia baja en el 6MWT se asocia con peor pronóstico funcional y cardiorrespiratorio, mayor disnea de esfuerzo y limitación en las actividades de la vida diaria.',
+    recommendation: PRO_REFERRAL + ' Un programa de ejercicio aeróbico supervisado mejora la distancia recorrida y la capacidad funcional.',
+    citation: 'Enright & Sherrill (1998); Casanova et al. (2011)',
+  },
+  {
+    range: 'P25-P40', emoji: EMOJIS['P25-P40'], title: 'Por debajo de lo esperado',
+    performance: 'Caminas algo menos de lo previsto para tu edad, sexo, talla y peso. Margen de mejora en capacidad aeróbica.',
+    healthImplication: 'La capacidad aeróbica máxima predice la autonomía y la tolerancia al esfuerzo en la vida diaria.',
+    recommendation: 'Incrementa de forma progresiva la marcha rápida o el ejercicio aeróbico, con orientación profesional.',
+    citation: 'Casanova et al. (2011)',
+  },
+  {
+    range: 'P40-P60', emoji: EMOJIS['P40-P60'], title: 'Capacidad normal',
+    performance: 'Tu distancia está dentro de los límites clínicos esperados para tu perfil. Nivel funcional adecuado.',
+    healthImplication: 'Una capacidad media indica una buena tolerancia al esfuerzo submáximo y autonomía conservada.',
+    recommendation: 'Mantén la actividad aeróbica regular para conservar y mejorar tu capacidad.',
+    citation: 'ATS (2002)',
+  },
+  {
+    range: 'P60-P75', emoji: EMOJIS['P60-P75'], title: 'Por encima de lo esperado',
+    performance: 'Recorres más distancia que la prevista. Buena capacidad aeróbica máxima.',
+    healthImplication: 'Una buena capacidad cardiorrespiratoria se asocia con menor riesgo cardiovascular y mejor pronóstico funcional.',
+    recommendation: 'Mantén y progresa con caminatas más largas o intervalos.',
+    citation: 'Enright & Sherrill (1998)',
+  },
+  {
+    range: 'P75-P90', emoji: EMOJIS['P75-P90'], title: 'Capacidad excelente',
+    performance: 'Tu rendimiento está entre los mejores de tu perfil: una capacidad aeróbica máxima destacada.',
+    healthImplication: 'Excelente reserva cardiorrespiratoria y un fuerte factor protector cardiometabólico.',
+    recommendation: '¡Muy bien! Tu resistencia es un referente para tu tribu.',
+    citation: 'Casanova et al. (2011)',
+  },
+  {
+    range: 'P90-P100', emoji: EMOJIS['P90-P100'], title: 'Capacidad de élite (top 10%)',
+    performance: 'Superas ampliamente tu distancia predicha: una capacidad aeróbica extraordinaria.',
+    healthImplication: 'Una capacidad tan alta es una de las mejores defensas frente al declive cardiorrespiratorio asociado a la edad.',
+    recommendation: 'Mantén tu entrenamiento: estás en un nivel óptimo de salud aeróbica.',
+    citation: 'Enright & Sherrill (1998); ATS (2002)',
+  },
+]
+
 export const FEEDBACK_MESSAGES: Record<FeedbackTestKey, PercentileFeedback[]> = {
-  tmt: TMT, pvt: PVT, balance: BALANCE, sts5: STS5, sts30: STS30, armcurl: ARMCURL, tug: TUG, balltoss: BALLTOSS, hooper: HOOPER,
+  tmt: TMT, pvt: PVT, balance: BALANCE, sts5: STS5, sts30: STS30, armcurl: ARMCURL, tug: TUG, balltoss: BALLTOSS, hooper: HOOPER, step2min: STEP2MIN, '6mwt': SIXMWT,
 }
 
 export const FEEDBACK_TEST_NAMES: Record<FeedbackTestKey, string> = {
@@ -463,6 +557,8 @@ export const FEEDBACK_TEST_NAMES: Record<FeedbackTestKey, string> = {
   tug: 'Timed Up and Go (TUG)',
   balltoss: 'Alternate Hand Wall Toss Test (AHWTT)',
   hooper: 'Índice de Hooper-Mackinnon (Bienestar)',
+  step2min: '2-Minute Step Test',
+  '6mwt': '6-Minute Walk Test (6MWT)',
 }
 
 /** Devuelve el mensaje de feedback de un test para un percentil dado (0-100). */
