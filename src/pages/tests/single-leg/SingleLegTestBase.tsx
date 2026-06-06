@@ -2,6 +2,7 @@ import { useState, useRef, useEffect, useCallback } from 'react'
 import { ArrowLeft, Play, Eye, EyeOff, X } from 'lucide-react'
 import { HistoryLineChart } from '../../../components/ui/HistoryLineChart'
 import { ConfirmDialog } from '../../../components/ui/ConfirmDialog'
+import { TestInstructions } from '../../../components/ui/TestInstructions'
 import { PercentileGauge } from '../../../components/ui/PercentileGauge'
 import { FeedbackCard } from '../../../components/ui/FeedbackCard'
 import { estimatePercentile } from '../../../utils/percentileUtils'
@@ -220,6 +221,14 @@ export function SingleLegTestBase({ modality, onBack }: Props) {
             </button>
             <h2 className="text-lg font-bold text-slate-700">{modality}</h2>
           </div>
+
+          <TestInstructions
+            accent="rose"
+            measures="Tu control postural y tu equilibrio estático sobre una sola pierna, uno de los predictores más potentes del riesgo de caídas (Springer et al., 2007; Vellas et al., 1997)."
+            how={<>Manos en las caderas, eleva un pie cerca del tobillo de apoyo y mantén la postura el máximo tiempo posible{isClosed ? ', con los ojos cerrados.' : ', con la mirada fija en un punto.'}</>}
+            keyRule="Al perder el equilibrio (soltar las caderas, apoyar el pie elevado o saltar), toca cualquier parte de la pantalla para detener el cronómetro."
+            meaning="Más segundos = mejor estabilidad y propiocepción. Tiempos bajos se asocian con mayor riesgo de caídas y con declive neuromuscular."
+          />
 
           {/* Barra de percentiles */}
           {percentiles && <PercentileBar p={percentiles} modality={modality} lastScore={history.at(-1)?.score} />}

@@ -8,6 +8,7 @@ import { FeedbackCard } from '../../../components/ui/FeedbackCard'
 import { estimatePercentile } from '../../../utils/percentileUtils'
 import { getFeedback } from '../../../data/testFeedbackMessages'
 import { tribeValuesFor } from '../../../data/mockTribeData'
+import { TestInstructions } from '../../../components/ui/TestInstructions'
 import {
   evaluateBallToss, getBallTossNorms, TONE_CLASSES, BALL_TOSS_STORAGE_KEY,
   type Gender, type BallTossAssessment, type BallTossSession,
@@ -100,12 +101,13 @@ export function BallTossTest({ onBack }: { onBack: () => void }) {
           </div>
 
           {/* Instrucciones */}
-          <div className="bg-blue-50 border border-blue-100 rounded-3xl p-4 mb-4 space-y-2 text-sm">
-            <p className="text-slate-700"><strong>¿Qué mide?</strong> La coordinación óculo-manual bilateral: tu capacidad de lanzar y atrapar alternando manos. Refleja la integración visomotora y la función cerebelosa (Rikli &amp; Jones, 2013).</p>
-            <p className="text-slate-700"><strong>¿Cómo?</strong> De pie a <strong>2 metros</strong> de una pared lisa. Lanza una pelota de tenis por debajo del hombro con una mano y atrápala tras el rebote con la mano contraria. Alterna continuamente durante 30 s.</p>
-            <p className="text-slate-700"><strong>Regla clave:</strong> Solo cuentan las recepciones exitosas. Si la pelota cae, recupérala rápido y sigue — el cronómetro no se detiene.</p>
-            <p className="text-slate-700"><strong>¿Qué significa?</strong> Más recepciones = mejor coordinación. Valores bajos pueden indicar déficits en la integración visomotora, la función cerebelosa o la velocidad de procesamiento visuoespacial.</p>
-          </div>
+          <TestInstructions
+            accent="blue"
+            measures={<>La coordinación óculo-manual bilateral: tu capacidad de lanzar y atrapar alternando manos. Refleja la integración visomotora y la función cerebelosa (Rikli &amp; Jones, 2013).</>}
+            how={<>De pie a <strong>2 metros</strong> de una pared lisa. Lanza una pelota de tenis por debajo del hombro con una mano y atrápala tras el rebote con la mano contraria. Alterna continuamente durante 30 s.</>}
+            keyRule="Solo cuentan las recepciones exitosas. Si la pelota cae, recupérala rápido y sigue — el cronómetro no se detiene."
+            meaning="Más recepciones = mejor coordinación. Valores bajos pueden indicar déficits en la integración visomotora, la función cerebelosa o la velocidad de procesamiento visuoespacial."
+          />
 
           <div className="bg-white rounded-3xl p-5 shadow-sm border border-slate-100 space-y-4">
             <div className="grid grid-cols-2 gap-3">

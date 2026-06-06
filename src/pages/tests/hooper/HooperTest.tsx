@@ -6,6 +6,7 @@ import {
 import { HistoryLineChart } from '../../../components/ui/HistoryLineChart'
 import { FeedbackCard } from '../../../components/ui/FeedbackCard'
 import { ConfirmDialog } from '../../../components/ui/ConfirmDialog'
+import { TestInstructions } from '../../../components/ui/TestInstructions'
 import { getFeedback } from '../../../data/testFeedbackMessages'
 import {
   HOOPER_QUESTIONS, STATUS_META, MIN_VARIABILITY,
@@ -123,12 +124,13 @@ export function HooperTest({ onBack }: { onBack: () => void }) {
           )}
 
           {/* Instrucciones */}
-          <div className="bg-white border border-slate-100 rounded-3xl p-4 mb-4 space-y-2 text-sm shadow-sm">
-            <p className="text-slate-700"><strong>¿Qué es?</strong> Un cuestionario rápido de 5 preguntas que mide cómo te sientes hoy: tu fatiga, sueño, dolor muscular, estrés y estado de ánimo.</p>
-            <p className="text-slate-700"><strong>¿Cómo funciona?</strong> Para cada pregunta, puntúa del 1 (peor posible) al 5 (mejor posible). Se completa en menos de 30 segundos.</p>
-            <p className="text-slate-700"><strong>¿Para qué sirve?</strong> Detecta cambios inusuales en tu bienestar comparando tus respuestas de hoy con tu historial. Si hay una caída significativa, te avisa para que ajustes tu actividad.</p>
-            <p className="text-[11px] text-slate-400 pt-1">Referencia: Hooper &amp; Mackinnon (Sports Medicine, 1995); Saw et al. (2016, BJSM).</p>
-          </div>
+          <TestInstructions
+            accent="teal"
+            measures={<>Tu bienestar subjetivo de hoy en 5 dimensiones: fatiga, sueño, dolor muscular, estrés y estado de ánimo (Hooper &amp; Mackinnon, 1995; Saw et al., 2016).</>}
+            how="Responde 5 preguntas puntuando del 1 (peor posible) al 5 (mejor posible). Se completa en menos de 30 segundos."
+            keyRule="Responde con sinceridad sobre cómo te sientes HOY. Está pensado para completarse una sola vez al día."
+            meaning="Detecta caídas inusuales comparando tu puntuación de hoy con tu historial personal (Z-Score). Una bajada significativa te avisa para ajustar tu actividad."
+          />
 
           <button onClick={startNew}
             className="mt-auto mb-2 w-full bg-teal-600 hover:bg-teal-700 text-white font-bold py-4 rounded-2xl shadow-lg shadow-teal-200 transition-all flex items-center justify-center gap-2">

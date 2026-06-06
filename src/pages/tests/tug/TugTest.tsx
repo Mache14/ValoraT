@@ -8,6 +8,7 @@ import { FeedbackCard } from '../../../components/ui/FeedbackCard'
 import { estimatePercentile } from '../../../utils/percentileUtils'
 import { getFeedback } from '../../../data/testFeedbackMessages'
 import { tribeValuesFor } from '../../../data/mockTribeData'
+import { TestInstructions } from '../../../components/ui/TestInstructions'
 import {
   getTugNorms, evaluateTug, TUG_TONE_CLASSES, TUG_STORAGE_KEY,
   type TugGender, type TugAssessment, type TugSession,
@@ -98,11 +99,13 @@ export function TugTest({ onBack }: { onBack: () => void }) {
           </div>
 
           {/* Instrucciones */}
-          <div className="bg-indigo-50 border border-indigo-100 rounded-3xl p-4 mb-4 space-y-2 text-sm">
-            <p className="text-slate-700"><strong>¿Qué mide?</strong> Tu movilidad funcional, equilibrio dinámico, velocidad de marcha y capacidad de giro, en una sola prueba (Podsiadlo & Richardson, 1991).</p>
-            <p className="text-slate-700"><strong>¿Cómo?</strong> Sentado en una silla. A la señal, levántate, camina 3 m hasta una marca, gira, vuelve y siéntate. A velocidad cómoda y natural, <strong>sin correr</strong>.</p>
-            <p className="text-slate-700"><strong>¿Qué significa?</strong> Menos tiempo = mejor coordinación neuromuscular. Tiempos altos se asocian con mayor riesgo de caídas y deterioro de la marcha.</p>
-          </div>
+          <TestInstructions
+            accent="indigo"
+            measures="Tu movilidad funcional, equilibrio dinámico, velocidad de marcha y capacidad de giro, en una sola prueba (Podsiadlo & Richardson, 1991)."
+            how="Sentado en una silla. A la señal, levántate, camina 3 m hasta una marca, gira, vuelve y siéntate."
+            keyRule={<>A velocidad cómoda y segura, <strong>sin correr</strong>. La silla marca el inicio y el final del test.</>}
+            meaning="Menos tiempo = mejor coordinación neuromuscular. Tiempos altos se asocian con mayor riesgo de caídas y deterioro de la marcha."
+          />
 
           <div className="bg-white rounded-3xl p-5 shadow-sm border border-slate-100 space-y-4">
             <div>

@@ -8,6 +8,7 @@ import { FeedbackCard } from '../../../components/ui/FeedbackCard'
 import { estimatePercentile } from '../../../utils/percentileUtils'
 import { getFeedback } from '../../../data/testFeedbackMessages'
 import { tribeValuesFor } from '../../../data/mockTribeData'
+import { TestInstructions } from '../../../components/ui/TestInstructions'
 import {
   evaluateSts, get30StsNorms, TONE_CLASSES, STS_STORAGE_KEY,
   type Gender, type StsAssessment, type StsSession,
@@ -97,11 +98,13 @@ export function SitToStandTest({ onBack }: { onBack: () => void }) {
           </div>
 
           {/* Instrucciones */}
-          <div className="bg-indigo-50 border border-indigo-100 rounded-3xl p-4 mb-4 space-y-2 text-sm">
-            <p className="text-slate-700"><strong>¿Qué mide?</strong> La fuerza y potencia de tus piernas al levantarte de una silla, un marcador clave de autonomía y sarcopenia (Bohannon, 2006; Cruz-Jentoft et al., 2019).</p>
-            <p className="text-slate-700"><strong>¿Cómo?</strong> Coloca el móvil en vista lateral. Brazos cruzados sobre el pecho. Levántate y siéntate completamente, lo más rápido posible, durante 30 s.</p>
-            <p className="text-slate-700"><strong>¿Qué significa?</strong> Más repeticiones y menos tiempo en 5 levantamientos = mejor potencia muscular. Valores bajos se asocian con riesgo de caídas y pérdida de movilidad.</p>
-          </div>
+          <TestInstructions
+            accent="indigo"
+            measures="La fuerza y potencia de tus piernas al levantarte de una silla, un marcador clave de autonomía y sarcopenia (Bohannon, 2006; Cruz-Jentoft et al., 2019)."
+            how="Coloca el móvil en vista lateral. Brazos cruzados sobre el pecho. Levántate y siéntate completamente, lo más rápido posible, durante 30 s."
+            keyRule="Mantén los brazos cruzados sobre el pecho todo el tiempo; en cada repetición, extensión completa de piernas al subir y contacto con la silla al bajar."
+            meaning="Más repeticiones y menos tiempo en 5 levantamientos = mejor potencia muscular. Valores bajos se asocian con riesgo de caídas y pérdida de movilidad."
+          />
 
           <div className="bg-white rounded-3xl p-5 shadow-sm border border-slate-100 space-y-4">
             <div className="grid grid-cols-2 gap-3">

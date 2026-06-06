@@ -8,6 +8,7 @@ import { FeedbackCard } from '../../../components/ui/FeedbackCard'
 import { estimatePercentile } from '../../../utils/percentileUtils'
 import { getFeedback } from '../../../data/testFeedbackMessages'
 import { tribeValuesFor } from '../../../data/mockTribeData'
+import { TestInstructions } from '../../../components/ui/TestInstructions'
 import {
   evaluateArmCurl, dumbbellWeight, getNormativeData, ARMCURL_TONE_CLASSES, ARMCURL_STORAGE_KEY,
   type ArmCurlGender, type ArmCurlAssessment, type ArmCurlSession,
@@ -90,11 +91,13 @@ export function ArmCurlTest({ onBack }: { onBack: () => void }) {
           </div>
 
           {/* Instrucciones */}
-          <div className="bg-indigo-50 border border-indigo-100 rounded-3xl p-4 mb-4 space-y-2 text-sm">
-            <p className="text-slate-700"><strong>¿Qué mide?</strong> La fuerza-resistencia de tus brazos (flexión de codo con mancuerna), clave para tareas cotidianas como cargar la compra (Rikli & Jones, 1999).</p>
-            <p className="text-slate-700"><strong>¿Cómo?</strong> Sentado, móvil en vista lateral. Flexiona y extiende el codo completamente con la mancuerna ({dumbbellWeight(gender)} kg), el máximo de veces en 30 s.</p>
-            <p className="text-slate-700"><strong>¿Qué significa?</strong> Más repeticiones = mejor fuerza del tren superior. Valores bajos (dinapenia) dificultan las actividades diarias y la protección ante caídas.</p>
-          </div>
+          <TestInstructions
+            accent="indigo"
+            measures="La fuerza-resistencia de tus brazos (flexión de codo con mancuerna), clave para tareas cotidianas como cargar la compra (Rikli & Jones, 1999)."
+            how={<>Sentado, móvil en vista lateral. Flexiona y extiende el codo completamente con la mancuerna ({dumbbellWeight(gender)} kg), el máximo de veces en 30 s.</>}
+            keyRule="Flexiona y extiende el codo por completo en cada repetición; solo cuentan las completas. Mantén el brazo pegado al cuerpo."
+            meaning="Más repeticiones = mejor fuerza del tren superior. Valores bajos (dinapenia) dificultan las actividades diarias y la protección ante caídas."
+          />
 
           <div className="bg-white rounded-3xl p-5 shadow-sm border border-slate-100 space-y-4">
             <div>

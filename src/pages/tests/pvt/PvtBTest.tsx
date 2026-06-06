@@ -7,6 +7,7 @@ import { FeedbackCard } from '../../../components/ui/FeedbackCard'
 import { estimatePercentile } from '../../../utils/percentileUtils'
 import { getFeedback } from '../../../data/testFeedbackMessages'
 import { tribeValuesFor } from '../../../data/mockTribeData'
+import { TestInstructions } from '../../../components/ui/TestInstructions'
 
 /**
  * PvtBTest — Brief Psychomotor Vigilance Task (Basner & Dinges, 2011).
@@ -239,12 +240,14 @@ export function PvtBTest({ onBack }: PvtBTestProps) {
             </div>
           </div>
 
-          {/* Hero */}
-          <div className="bg-gradient-to-br from-indigo-600 to-blue-700 rounded-3xl p-5 text-white shadow-lg shadow-blue-200">
-            <span className="bg-white/20 text-[10px] font-bold px-2.5 py-1 rounded-full uppercase tracking-wider">Basner & Dinges (2011)</span>
-            <h2 className="text-lg font-bold mt-3 mb-1">Mide la fatiga de tu sistema nervioso</h2>
-            <p className="text-blue-100 text-sm leading-relaxed">Test objetivo de vigilancia psicomotora. Pulsa lo más rápido posible cuando aparezca el contador.</p>
-          </div>
+          {/* Instrucciones */}
+          <TestInstructions
+            accent="indigo"
+            measures="El estado de alerta y la fatiga de tu sistema nervioso central, a través de tu tiempo de reacción y tu atención sostenida (Basner & Dinges, 2011)."
+            how="Sujeta el móvil con ambas manos. Cuando aparezca el contador rojo de milisegundos, pulsa la pantalla lo más rápido posible. Se repite durante toda la prueba."
+            keyRule="No te anticipes: pulsar antes de que aparezca el contador cuenta como error (anticipación)."
+            meaning="Reacciones rápidas y constantes indican un sistema nervioso descansado. Tiempos lentos o lapsos frecuentes reflejan fatiga y reducen la seguridad en tareas cotidianas."
+          />
 
           {/* Cómo funciona (instrucciones visuales paso a paso) */}
           <div className="bg-white rounded-3xl p-5 shadow-sm border border-slate-100">

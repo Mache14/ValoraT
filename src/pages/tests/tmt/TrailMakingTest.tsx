@@ -7,6 +7,7 @@ import { FeedbackCard } from '../../../components/ui/FeedbackCard'
 import { estimatePercentile } from '../../../utils/percentileUtils'
 import { getFeedback } from '../../../data/testFeedbackMessages'
 import { tribeValuesFor } from '../../../data/mockTribeData'
+import { TestInstructions } from '../../../components/ui/TestInstructions'
 import {
   AGE_GROUPS, getNorms, getTmtBPercentiles, buildDiagnosis,
   type AgeGroup, type Education,
@@ -340,11 +341,13 @@ export function TrailMakingTest({ onBack }: TrailMakingTestProps) {
           </div>
 
           {/* Instrucciones */}
-          <div className="bg-orange-50 border border-orange-100 rounded-3xl p-4 mb-4 space-y-2 text-sm">
-            <p className="text-slate-700"><strong>¿Qué mide?</strong> Tu velocidad de procesamiento mental y tu capacidad para alternar entre tareas (función ejecutiva), conectando círculos en orden (Tombaugh, 2004).</p>
-            <p className="text-slate-700"><strong>¿Cómo?</strong> En horizontal, conecta los números en orden (Parte A) y luego alternando números y letras: 1-A-2-B... (Parte B), lo más rápido posible.</p>
-            <p className="text-slate-700"><strong>¿Qué significa?</strong> Tiempos rápidos indican buena agilidad mental. Tiempos lentos pueden asociarse con deterioro cognitivo y se benefician de estimulación y ejercicio.</p>
-          </div>
+          <TestInstructions
+            accent="orange"
+            measures="Tu velocidad de procesamiento mental y tu capacidad para alternar entre tareas (función ejecutiva), conectando círculos en orden (Tombaugh, 2004)."
+            how="En horizontal, conecta los números en orden (Parte A) y luego alternando números y letras: 1-A-2-B… (Parte B), lo más rápido posible."
+            keyRule="Si te equivocas, el test no avanza hasta que aciertas: continúa desde el último círculo correcto. En móvil, gira la pantalla a horizontal."
+            meaning="Tiempos rápidos indican buena agilidad mental. Tiempos lentos pueden asociarse con deterioro cognitivo y se benefician de estimulación y ejercicio."
+          />
 
           <div className="bg-white rounded-3xl p-5 shadow-sm border border-slate-100 space-y-5">
             <div>
