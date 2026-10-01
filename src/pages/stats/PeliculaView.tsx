@@ -1,15 +1,21 @@
+import { useState } from 'react'
+import { createPortal } from 'react-dom'
 import {
   AlertOctagon, AlertTriangle, ArrowUpRight, Lightbulb, Brain, Sparkles,
   TrendingUp, CalendarDays, Heart, Smile, Moon, Activity, Coffee, Users,
-  Trophy, Flame, Flag, Star, Target, CheckCircle2,
+  Trophy, Flame, Flag, Star, Target, CheckCircle2, FileText, Printer, X,
 } from 'lucide-react'
+import { HealthReportDocument } from '../../components/report/HealthReportDocument'
 
 /**
  * PeliculaView — pantalla "Tu Película".
  * El análisis longitudinal completo: alertas prioritarias, plan de acción,
- * pilares de calidad de vida y logros (gamificación).
+ * pilares de calidad de vida y logros (gamificación). Incluye la descarga del
+ * Informe de Salud Integral en PDF (vía window.print()).
  */
 export function PeliculaView() {
+  const [showReport, setShowReport] = useState(false)
+
   return (
     <div className="pb-24 animate-in">
       {/* Header */}
@@ -19,6 +25,23 @@ export function PeliculaView() {
         </h2>
         <p className="text-slate-500 font-medium mt-1 text-sm">El análisis completo de tu evolución</p>
       </div>
+
+      {/* Descargar informe completo */}
+      <button
+        onClick={() => setShowReport(true)}
+        className="w-full mb-6 bg-indigo-600 hover:bg-indigo-700 text-white rounded-3xl p-5 shadow-lg shadow-indigo-200 flex items-center gap-4 transition-colors text-left"
+      >
+        <div className="bg-white/20 p-3 rounded-2xl flex-shrink-0">
+          <FileText size={26} />
+        </div>
+        <div className="flex-1">
+          <h3 className="font-black uppercase tracking-wider leading-tight">Descargar Informe Completo (PDF)</h3>
+          <p className="text-indigo-100 text-xs font-medium mt-0.5">
+            Todas las dimensiones, feedback, monitorización y plan de acción en un único documento.
+          </p>
+        </div>
+        <ArrowUpRight size={22} strokeWidth={3} className="flex-shrink-0" />
+      </button>
 
       {/* 1. Alertas prioritarias */}
       <div className="bg-gradient-to-br from-rose-500 to-red-600 rounded-3xl p-6 shadow-lg shadow-red-200 text-white mb-6 relative overflow-hidden">
@@ -188,6 +211,33 @@ export function PeliculaView() {
           </div>
         </div>
       </div>
+
+      {/* Overlay del Informe de Salud Integral (se imprime / guarda como PDF).
+          Se monta en document.body (portal) para que al imprimir se pueda ocultar
+          el resto de la app y el informe fluya en varias páginas sin recortes. */}
+      {showReport && createPortal(
+        <div className="report-portal report-overlay fixed inset-0 z-[70] bg-slate-100 overflow-y-auto">
+          {/* Barra superior — no se imprime */}
+          <div className="no-print sticky top-0 z-10 bg-white border-b border-slate-200 px-4 py-3 flex items-center justify-between">
+            <button
+              onClick={() => setShowReport(false)}
+              className="flex items-center gap-1.5 text-sm font-bold text-slate-500 hover:text-slate-800 transition-colors"
+            >
+              <X size={18} /> Cerrar
+            </button>
+            <button
+              onClick={() => window.print()}
+              className="bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-sm px-4 py-2 rounded-xl flex items-center gap-2 shadow-sm transition-colors"
+            >
+              <Printer size={16} /> Imprimir / Guardar como PDF
+            </button>
+          </div>
+          <div className="py-6">
+            <HealthReportDocument />
+          </div>
+        </div>,
+        document.body,
+      )}
     </div>
   )
 }

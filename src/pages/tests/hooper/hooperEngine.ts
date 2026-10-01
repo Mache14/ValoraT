@@ -6,18 +6,29 @@
  * usuario, con una salvaguarda de variabilidad mínima (SD ≥ 1.2) que evita falsos positivos
  * cuando el histórico es ultraestable (bug crítico documentado en el informe del prototipo).
  *
+ * NOTA SOBRE LOS 5 ÍTEMS: el Índice de Hooper-Mackinnon ORIGINAL (1995) consta de 4 ítems
+ * (sueño, fatiga, estrés y dolor muscular). La versión de 5 ítems empleada aquí —que añade el
+ * "estado de ánimo" con escala 1-5 y total 5-25— corresponde al CUESTIONARIO DE BIENESTAR
+ * MODIFICADO de McLean et al. (2010), ampliamente usado en monitorización del bienestar. Las
+ * preguntas se han adaptado a población sedentaria/recreacional de 40-65 años (ver campos
+ * `adaptationNote` y `adaptationSource` de cada ítem).
+ *
  * Referencias: Hooper, S.L. & Mackinnon, L.T. (1995). Monitoring overtraining in athletes.
- * Sports Medicine, 20(5), 321-327. Saw, A.E., Main, L.C. & Gastin, P.B. (2016). BJSM, 50(5).
+ * Sports Medicine, 20(5), 321-327 [doi:10.2165/00007256-199520050-00003]. McLean, B.D. et al.
+ * (2010). IJSPP, 5(3), 367-383 [doi:10.1123/ijspp.5.3.367]. Saw, A.E., Main, L.C. & Gastin, P.B.
+ * (2016). BJSM, 50(5), 281-291 [doi:10.1136/bjsports-2015-094758].
  */
 
 export interface HooperQuestion {
   id: string
   category: string
   title: string
-  legendMin: string // explicación del valor 1
-  legendMax: string // explicación del valor 5
-  icon: string      // nombre del icono lucide-react
-  color: string     // color temático (amber | blue | emerald | purple | rose)
+  legendMin: string        // explicación del valor 1
+  legendMax: string        // explicación del valor 5
+  icon: string             // nombre del icono lucide-react
+  color: string            // color temático (amber | blue | emerald | purple | rose)
+  adaptationNote: string   // qué se adaptó y por qué (población sedentaria/recreacional de 40-65 años)
+  adaptationSource: string // referencia(s) científica(s) que respaldan la adaptación
 }
 
 /** Las 5 preguntas del protocolo (textos exactos del prototipo). */
@@ -25,11 +36,13 @@ export const HOOPER_QUESTIONS: HooperQuestion[] = [
   {
     id: 'fatigue',
     category: 'Fatiga General',
-    title: '¿Cómo describirías tu nivel de fatiga muscular y de energía hoy?',
-    legendMin: 'Agotamiento absoluto y total (incapaz de entrenar)',
+    title: '¿Cómo describirías hoy tu nivel general de fatiga y energía (teniendo en cuenta también el cansancio del día a día: trabajo, tareas y descanso)?',
+    legendMin: 'Agotamiento total, sin energía para mis actividades cotidianas',
     legendMax: 'Lleno de energía, descansado y con máxima vitalidad',
     icon: 'BatteryCharging',
     color: 'amber',
+    adaptationNote: 'Se evalúa la fatiga de forma global (no solo la derivada del ejercicio): en adultos de 40-65 años poco activos, la fatiga diaria depende sobre todo de estresores cotidianos —laborales, de sueño y vitales—, no del entrenamiento. Por eso se retira del extremo bajo la referencia a "ser incapaz de entrenar".',
+    adaptationSource: 'Saw, Main & Gastin (2016); carga alostática de McEwen (1998), que se acumula con la edad (Seeman et al., 2001).',
   },
   {
     id: 'sleep',
@@ -39,24 +52,30 @@ export const HOOPER_QUESTIONS: HooperQuestion[] = [
     legendMax: 'Sueño profundo, reparador e ininterrumpido',
     icon: 'Moon',
     color: 'blue',
+    adaptationNote: 'El ítem se conserva porque la calidad del sueño es un marcador de recuperación universal, pero su interpretación se calibra por edad: a partir de los 40-65 años el sueño se fragmenta y disminuye el sueño profundo de forma fisiológica. Por ello no se compara con una norma de joven deportista, sino con la línea base personal del usuario (Z-Score).',
+    adaptationSource: 'Hooper & Mackinnon (1995); Ohayon et al. (2004); McEwen (1998).',
   },
   {
     id: 'pain',
     category: 'Dolor Muscular (DOMS)',
-    title: '¿Sientes dolor muscular o agujetas por esfuerzos previos?',
+    title: '¿Sientes hoy dolor muscular o agujetas (por actividad física reciente o por esfuerzos poco habituales del día a día)?',
     legendMin: 'Dolor incapacitante y rigidez generalizada',
     legendMax: 'Músculos relajados, libres de molestias o tensión',
     icon: 'Sparkles',
     color: 'emerald',
+    adaptationNote: 'Se amplía "esfuerzos previos" para incluir gestos cotidianos poco habituales, no solo el entrenamiento. En personas desentrenadas, cargas absolutas bajas ya producen agujetas y daño muscular desproporcionados (fase de alarma); además, a partir de los 40-65 años el músculo es más susceptible al daño y la recuperación es más lenta.',
+    adaptationSource: 'Clarkson & Hubal (2002); Selye (1950); y, para la edad, Fell & Williams (2008).',
   },
   {
     id: 'stress',
     category: 'Nivel de Estrés',
-    title: '¿Cuál es tu nivel de tensión mental o estrés psicológico hoy?',
+    title: '¿Cuál es hoy tu nivel de estrés o tensión mental (laboral, familiar o personal)?',
     legendMin: 'Ansiedad extrema, agobiado y mente dispersa',
     legendMax: 'Total calma mental, enfocado y libre de tensiones',
     icon: 'Brain',
     color: 'purple',
+    adaptationNote: 'Se explicita el origen cotidiano del estrés (laboral, familiar, personal) porque en población de 40-65 años poco activa el estrés psicosocial domina la carga total; el organismo no distingue el origen del estresor: físico, psicológico o social convergen en los mismos mediadores neuroendocrinos.',
+    adaptationSource: 'Carga alostática de McEwen (1998), acumulativa con la edad (Seeman et al., 2001); medidas subjetivas sensibles a estresores no deportivos (Saw et al., 2016).',
   },
   {
     id: 'mood',
@@ -66,6 +85,8 @@ export const HOOPER_QUESTIONS: HooperQuestion[] = [
     legendMax: 'Sumamente positivo, entusiasmado y motivado',
     icon: 'Smile',
     color: 'rose',
+    adaptationNote: 'Aclaración importante: este 5.º ítem NO pertenece al Hooper-Mackinnon original de 4 ítems; corresponde al cuestionario de bienestar modificado de 5 ítems (McLean et al., 2010). Se conserva porque la disposición emocional/motivacional es un marcador temprano de sobrecarga y, en población poco motivada de 40-65 años, es determinante de la adherencia al programa.',
+    adaptationSource: 'McLean et al. (2010); Meeusen et al. (2013).',
   },
 ]
 

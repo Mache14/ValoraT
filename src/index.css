@@ -68,3 +68,31 @@ body {
 ::-webkit-scrollbar-track { background: transparent; }
 ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 3px; }
 ::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
+
+/* ─── Impresión del Informe de Salud Integral (Guardar como PDF) ───
+   Al imprimir se oculta toda la app y se muestra SOLO el documento marcado
+   con .report-print-area; los colores de los semáforos se fuerzan a imprimirse. */
+.report-print-area {
+  -webkit-print-color-adjust: exact;
+  print-color-adjust: exact;
+}
+
+@media print {
+  /* El overlay del informe está en document.body (portal). Ocultamos TODO lo demás
+     (la app en #root) y dejamos el informe en FLUJO NORMAL para que pagine sin recortes. */
+  body > *:not(.report-portal) { display: none !important; }
+  .report-portal {
+    position: static !important;
+    overflow: visible !important;
+    height: auto !important;
+    background: #fff !important;
+  }
+  .report-portal .no-print { display: none !important; }
+  .report-print-area {
+    max-width: 100% !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    box-shadow: none !important;
+  }
+  @page { margin: 14mm; }
+}

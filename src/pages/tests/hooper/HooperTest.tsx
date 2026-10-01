@@ -1,7 +1,7 @@
 import { useState, useEffect, type ComponentType } from 'react'
 import {
   ArrowLeft, X, CheckCircle2, RotateCcw, HeartPulse, ShieldCheck, ChevronLeft,
-  BatteryCharging, Moon, Sparkles, Brain, Smile,
+  BatteryCharging, Moon, Sparkles, Brain, Smile, Info, ChevronDown,
 } from 'lucide-react'
 import { HistoryLineChart } from '../../../components/ui/HistoryLineChart'
 import { FeedbackCard } from '../../../components/ui/FeedbackCard'
@@ -42,8 +42,11 @@ export function HooperTest({ onBack }: { onBack: () => void }) {
   const [history, setHistory] = useState<HooperSession[]>([])
   const [result, setResult] = useState<HooperResult | null>(null)
   const [confirmExit, setConfirmExit] = useState(false)
+  const [showWhy, setShowWhy] = useState(false) // desplegable "¿Por qué esta adaptación?"
 
   useEffect(() => { setHistory(loadHooperHistory()) }, [])
+  // El desplegable de adaptación se cierra al cambiar de pregunta (avanzar o volver atrás).
+  useEffect(() => { setShowWhy(false) }, [currentIdx])
 
   const todaySession = history.find((s) => s.date === todayKey())
 
@@ -185,6 +188,22 @@ export function HooperTest({ onBack }: { onBack: () => void }) {
                   <span className="font-bold text-emerald-600 block mb-0.5">Puntuación 5</span>
                   <span className="text-slate-500">{q.legendMax}</span>
                 </div>
+              </div>
+
+              {/* Desplegable: adaptación científica del ítem a la población (40-65 años) */}
+              <div className="pt-1">
+                <button onClick={() => setShowWhy((v) => !v)}
+                  className="flex items-center gap-1.5 text-[11px] font-bold text-teal-600 hover:text-teal-700 transition-colors">
+                  <Info size={14} />
+                  ¿Por qué esta adaptación?
+                  <ChevronDown size={14} className={`transition-transform ${showWhy ? 'rotate-180' : ''}`} />
+                </button>
+                {showWhy && (
+                  <div className="mt-2 bg-slate-50 border border-slate-200/60 rounded-xl p-3 text-[11px] leading-relaxed text-slate-600 space-y-1.5">
+                    <p>{q.adaptationNote}</p>
+                    <p className="font-semibold text-slate-500 italic">Fuente: {q.adaptationSource}</p>
+                  </div>
+                )}
               </div>
             </div>
 

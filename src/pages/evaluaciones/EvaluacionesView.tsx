@@ -17,6 +17,8 @@ import { BallTossTest } from '../tests/ball-toss/BallTossTest'
 import { HooperTest } from '../tests/hooper/HooperTest'
 import { Step2MinTest } from '../tests/step-2min/Step2MinTest'
 import { SixMinuteWalkTest } from '../tests/6mwt/SixMinuteWalkTest'
+import { AntropometriaTest } from '../tests/antropometria/AntropometriaTest'
+import { ChairReachTest } from '../tests/chair-reach/ChairReachTest'
 
 /**
  * Registro de tests con pantalla funcional.
@@ -31,10 +33,12 @@ const TEST_COMPONENTS: Record<string, ComponentType<{ onBack: () => void }>> = {
   'sit-to-stand': SitToStandTest,
   'arm-curl': ArmCurlTest,
   tug: TugTest,
+  'chair-reach': ChairReachTest,
   'ball-toss': BallTossTest,
   hooper: HooperTest,
   'step-2min': Step2MinTest,
   '6mwt': SixMinuteWalkTest,
+  antropometria: AntropometriaTest,
 }
 
 /**
@@ -93,11 +97,11 @@ const testsDetailData: Record<string, TestDetail[]> = {
     { title: 'Pases con pelota alternos', desc: 'Coordinación óculo-manual. Lanzar y recibir una pelota contra la pared alternando las manos de forma fluida.', trend: [80, 78, 70, 65, 60], status: 'down', icon: Activity, testId: 'ball-toss' },
   ],
   antropometria: [
-    { title: 'Bioimpedancia', desc: 'Análisis de la composición corporal (porcentaje de grasa, músculo y agua) mediante una báscula inteligente.', trend: [60, 65, 70, 75, 81], status: 'up', icon: Zap },
-    { title: 'Perímetro de cintura', desc: 'Marcador clave de grasa visceral y riesgo metabólico/cardiovascular. Fundamental tenerlo bajo control.', trend: [70, 72, 75, 78, 81], status: 'up', icon: Ruler },
+    { title: 'Bioimpedancia', desc: 'Análisis de la composición corporal (porcentaje de grasa, músculo y agua) mediante una báscula inteligente.', trend: [60, 65, 70, 75, 81], status: 'up', icon: Zap, testId: 'antropometria' },
+    { title: 'Perímetro de cintura', desc: 'Marcador clave de grasa visceral y riesgo metabólico/cardiovascular. Fundamental tenerlo bajo control.', trend: [70, 72, 75, 78, 81], status: 'up', icon: Ruler, testId: 'antropometria' },
   ],
   movilidad: [
-    { title: 'Chair Sit and Reach', desc: 'Evalúa la flexibilidad de la parte inferior del cuerpo (isquiosurales), crucial para el patrón de marcha.', trend: [80, 85, 88, 90, 92], status: 'up', icon: Activity },
+    { title: 'Chair Sit-and-Reach', desc: 'Flexibilidad isquiosural y de la cadena posterior, determinante para el patrón de marcha y tareas como calzarte. Sentado, deslizas la mano hacia la punta del pie y se mide en cm.', trend: [55, 58, 60, 62, 64], status: 'up', icon: Ruler, testId: 'chair-reach' },
     { title: 'Back Scratch Test', desc: 'Flexibilidad del tren superior (hombros). Nos indica la facilidad para realizar tareas como vestirse.', trend: [75, 80, 85, 90, 92], status: 'up', icon: Activity },
   ],
   resistencia: [
